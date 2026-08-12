@@ -1,0 +1,120 @@
+name: Deploy to server
+
+# Blue-green deploy. The image is built HERE (the server has no internet
+# egress) and shipped via private S3; the server loads it through the S3
+# VPC endpoint, health-checks, then the ALB listener is swapped.
+# The previous color keeps running as instant rollback.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # OIDC token for AWS - no stored keys
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: il-central-1
+  INSTANCE_ID: i-067e3e32a26064b24
+  ARTIFACT_BUCKET: bgu-teaching-center-deploy-artifacts
+  LISTENER_ARN: arn:aws:elasticloadbalancing:il-central-1:263011180932:listener/app/teaching-center-alb/a2de76215e0428f7/4ceedcf950c81820
+  BLUE_TG: arn:aws:elasticloadbalancing:il-central-1:263011180932:targetgroup/teaching-center-blue/1b8fa0718d65808e
+  GREEN_TG: arn:aws:elasticloadbalancing:il-central-1:263011180932:targetgroup/teaching-center-green/15d8543e8ec856f9
+
+jobs:
+  checks:
+    name: Site checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/check_links.py
+
+  deploy:
+    name: Build and blue-green deploy
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: |
+          docker build -t "site:$GITHUB_SHA" .
+          docker save "site:$GITHUB_SHA" | gzip > "site-$GITHUB_SHA.tar.gz"
+          ls -lh "site-$GITHUB_SHA.tar.gz"
+
+      - name: Assume deploy role (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::263011180932:role/teaching-center-github-deploy
+          aws-region: il-central-1
+
+      - name: Upload image to S3
+        run: aws s3 cp "site-$GITHUB_SHA.tar.gz" "s3://$ARTIFACT_BUCKET/images/site-$GITHUB_SHA.tar.gz" --only-show-errors
+
+      - name: Pick inactive color
+        id: pick
+        run: |
+          CURRENT=$(aws elbv2 describe-listeners --listener-arns "$LISTENER_ARN" \
+            --query 'Listeners[0].DefaultActions[0].TargetGroupArn' --output text)
+          if [ "$CURRENT" = "$BLUE_TG" ]; then
+            echo "tg=$GREEN_TG"    >> "$GITHUB_OUTPUT"
+            echo "port=8081"       >> "$GITHUB_OUTPUT"
+            echo "name=site-green" >> "$GITHUB_OUTPUT"
+            echo "rollback=$BLUE_TG" >> "$GITHUB_OUTPUT"
+          else
+            echo "tg=$BLUE_TG"     >> "$GITHUB_OUTPUT"
+            echo "port=8080"       >> "$GITHUB_OUTPUT"
+            echo "name=site-blue"  >> "$GITHUB_OUTPUT"
+            echo "rollback=$GREEN_TG" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Load and start new container on server (SSM)
+        run: |
+          CMD_ID=$(aws ssm send-command --instance-ids "$INSTANCE_ID" \
+            --document-name AWS-RunShellScript \
+            --comment "deploy ${GITHUB_SHA::7} to ${{ steps.pick.outputs.name }}" \
+            --parameters "commands=[\"bash /opt/site/deploy.sh $GITHUB_SHA ${{ steps.pick.outputs.name }} ${{ steps.pick.outputs.port }}\"],executionTimeout=[\"900\"]" \
+            --query 'Command.CommandId' --output text)
+          echo "SSM command: $CMD_ID"
+          STATUS=InProgress
+          for i in $(seq 1 90); do
+            STATUS=$(aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$INSTANCE_ID" \
+              --query 'Status' --output text 2>/dev/null || echo Pending)
+            case "$STATUS" in Success|Failed|Cancelled|TimedOut) break;; esac
+            sleep 10
+          done
+          echo "--- server output ---"
+          aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$INSTANCE_ID" \
+            --query 'StandardOutputContent' --output text || true
+          if [ "$STATUS" != "Success" ]; then
+            echo "--- server errors ---"
+            aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$INSTANCE_ID" \
+              --query 'StandardErrorContent' --output text || true
+            exit 1
+          fi
+
+      - name: Wait for target health
+        run: |
+          for i in $(seq 1 40); do
+            H=$(aws elbv2 describe-target-health --target-group-arn "${{ steps.pick.outputs.tg }}" \
+              --targets Id=$INSTANCE_ID \
+              --query 'TargetHealthDescriptions[0].TargetHealth.State' --output text)
+            echo "health: $H"
+            [ "$H" = "healthy" ] && exit 0
+            sleep 5
+          done
+          echo "target never became healthy - listener NOT swapped, live site untouched"
+          exit 1
+
+      - name: Swap listener to new color
+        run: |
+          aws elbv2 modify-listener --listener-arn "$LISTENER_ARN" \
+            --default-actions Type=forward,TargetGroupArn="${{ steps.pick.outputs.tg }}" \
+            --query 'Listeners[0].DefaultActions[0].TargetGroupArn' --output text
+          echo "Deployed ${GITHUB_SHA::7} -> ${{ steps.pick.outputs.name }}"
+          echo "Instant rollback: swap listener back to ${{ steps.pick.outputs.rollback }}"
