@@ -1,0 +1,22 @@
+name: Site checks
+
+# Safety net for the live site (GitHub Pages publishes main automatically).
+# Runs on every PR (gate before merge) and on every push to main (visibility).
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  link-check:
+    name: HTML + internal links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check HTML files and internal links
+        run: python3 scripts/check_links.py
