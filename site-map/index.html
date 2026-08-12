@@ -12,24 +12,31 @@
   gtag('js', new Date());
   gtag('config', 'G-EZ4EEMW6C2');
 </script>
-<title>מורה נבוכים — מערכות מחשוב בהוראה</title>
+<title>מורה נבוכים - מערכות מחשוב בהוראה</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#16181d;
-  --ink-2:#4a5058;
-  --ink-3:#7b838d;
+  /* ===== פונט המותג ===== */
+  --font-he:"Open Sans Hebrew","Open Sans","Arial",sans-serif;
+  /* ===== טקסט: גווני שחור לפי ספר המותג - לא שחור טהור ===== */
+  --ink:#333333;          /* טקסט רץ - 80% שחור */
+  --ink-2:#58595b;        /* אפור כהה ראשי (PANTONE 425) */
+  --ink-3:#828487;        /* אפור בינוני */
   --paper:#ffffff;
-  --surface:#f4f6f8;
-  --line:#dde3e8;
-  --navy:#16324f;
-  --navy-2:#24486e;
-  --orange:#F0902B;
-  --orange-deep:#c96f13;
-  --orange-soft:#fef4e9;
-  --orange-line:#f6cfa2;
+  --surface:#f4f5f6;
+  --line:#d3d8dc;         /* קווי הפרדה - אפור בהיר */
+  /* ===== ה"כהה" של המותג: אפור פחם במקום כחול נייבי (הבנד של ציר הסמסטר) ===== */
+  --navy:#54565a;         /* השם נשמר לצורך תאימות; הערך עכשיו אפור המותג */
+  --navy-2:#6e7074;
+  /* ===== כתום המותג ===== */
+  --orange:#f7941e;       /* הכתום הרשמי (RGB 247,148,30 · PANTONE 144) - מילויים, מוטיב, הדגשות */
+  --orange-deep:#e16327;  /* כתום עמוק - תחילת הגרדיאנט הרשמי (דקורטיבי) */
+  --orange-ink:#b8560f;   /* כתום לטקסט על לבן ולכפתורי CTA - עומד בניגודיות AA */
+  --orange-soft:#fdf1e6;  /* רקע כתום רך לקאלאאוטים */
+  --orange-line:#f4cfa6;
+  --grad-orange:linear-gradient(135deg,#e16327 0%,#f7941e 100%); /* גרדיאנט רשמי */
   --radius:3px;
   --wrap:1080px;
 }
@@ -37,19 +44,22 @@
 html{scroll-behavior:smooth}
 body{
   margin:0;background:var(--paper);color:var(--ink);
-  font-family:'Assistant',system-ui,sans-serif;font-size:18px;line-height:1.7;
+  font-family:var(--font-he);font-size:18px;line-height:1.6;
   -webkit-font-smoothing:antialiased;
 }
-h1,h2,h3,h4{font-family:'Assistant',system-ui,sans-serif;font-weight:700;line-height:1.2;margin:0}
+h1,h2,h3,h4{font-family:var(--font-he);font-weight:700;line-height:1.05;margin:0}
 a{color:var(--navy)}
 .mono{font-variant-numeric:tabular-nums}
 .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
 /* ---------- masthead ---------- */
-.masthead{border-bottom:1px solid var(--line);background:var(--paper)}
-.mast-logo{padding:22px 0 18px;text-align:center}
-.mast-logo a{display:inline-block;max-width:560px;width:100%;border-radius:var(--radius);
+.masthead{border-bottom:1px solid var(--line);background:var(--paper);position:relative;overflow:hidden}
+/* קוביה איזומטרית - חתימת "עמוד פתיחה" של ספר המותג, בפינה הפנויה (הלוגו נשאר במרכז עם מרחב סטרילי) */
+.mast-cube{position:absolute;top:14px;inset-inline-end:20px;width:58px;height:58px;
+  opacity:.92;pointer-events:none;z-index:2}
+.mast-logo{padding:22px 0 18px;text-align:center;position:relative;z-index:1}
+.mast-logo a{display:inline-block;max-width:660px;width:100%;border-radius:var(--radius);
   transition:opacity .15s}
 .mast-logo a:hover{opacity:.82}
 .mast-logo a:focus-visible{outline:2px solid var(--navy);outline-offset:6px}
@@ -58,7 +68,7 @@ a{color:var(--navy)}
 .mast-bar .wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
 .brand{font-weight:800;font-size:22.5px;letter-spacing:-.01em;cursor:pointer;background:none;border:0;
   font-family:inherit;color:var(--ink);padding:0;line-height:1.2}
-.brand span{color:var(--orange-deep)}
+.brand span{color:var(--orange-ink)}
 .brand:focus-visible{outline:2px solid var(--navy);outline-offset:3px}
 .searchbox{position:relative;flex:1 1 220px;max-width:340px;margin-inline-start:auto}
 .searchbox input{
@@ -68,50 +78,61 @@ a{color:var(--navy)}
 .searchbox input:focus{outline:2px solid var(--navy);outline-offset:1px}
 
 /* ---------- rail (signature: time axis) ---------- */
-.rail-shell{background:var(--navy);color:#fff;padding:32px 0 28px}
-.rail-lede{font-size:14.5px;color:#a8bdd2;margin:0 0 24px;letter-spacing:.02em}
+.rail-shell{background:var(--navy);color:#fff;padding:32px 0 28px;position:relative;overflow:hidden}
+/* מוטיב האלכסון - שכבות מקבילית עדינות מאוד לתחושת פרספקטיבה (שקיפות נמוכה, לא פוגעות בקריאוּת) */
+.rail-shell::before,.rail-shell::after{content:"";position:absolute;pointer-events:none;z-index:0}
+.rail-shell::before{top:-50px;inset-inline-end:-40px;width:360px;height:280px;background:var(--orange);
+  opacity:.08;clip-path:polygon(30% 0,100% 0,70% 100%,0 100%)}
+.rail-shell::after{bottom:-70px;inset-inline-end:180px;width:300px;height:300px;background:#fff;
+  opacity:.045;clip-path:polygon(30% 0,100% 0,70% 100%,0 100%)}
+.rail-shell>.wrap{position:relative;z-index:1}
+.rail-lede{font-size:14.5px;color:#cbc9c4;margin:0 0 24px;letter-spacing:.02em}
 .rail{position:relative;display:flex;gap:0;align-items:stretch}
-.rail::before{content:"";position:absolute;top:11px;right:0;left:0;height:2px;background:#2e5f8e}
+.rail::before{content:"";position:absolute;top:11px;right:0;left:0;height:2px;background:#74757a}
 .phase{flex:1;position:relative;padding-top:30px;text-align:right;padding-inline-end:18px;
   cursor:pointer;background:none;border:0;color:inherit;font-family:inherit}
 .phase::before{
   content:"";position:absolute;top:5px;right:0;width:14px;height:14px;border-radius:50%;
-  background:var(--navy);border:2px solid #5a86ae;transition:background .18s,border-color .18s;
+  background:var(--navy);border:2px solid #8b8c8f;transition:background .18s,border-color .18s;
 }
 .phase.full::before{background:var(--orange);border-color:var(--orange)}
 .phase:hover::before,.phase:focus-visible::before{background:#fff;border-color:#fff}
 .phase-name{font-size:18px;font-weight:700;display:block}
-.phase-meta{font-size:13.5px;color:#9fb6cc;display:block;margin-top:2px}
-.phase-bar{display:block;height:3px;border-radius:2px;overflow:hidden;background:#28527d;margin-top:11px;max-width:88%}
+.phase-meta{font-size:13.5px;color:#b6b6b8;display:block;margin-top:2px}
+.phase-bar{display:block;height:3px;border-radius:2px;overflow:hidden;background:#6a6b6e;margin-top:11px;max-width:88%}
 .phase-bar i{display:block;height:100%;background:var(--orange);width:0;transition:width .4s ease}
 .phase:focus-visible{outline:2px solid #fff;outline-offset:3px}
 
 /* hard-deadline pins */
 .pins{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;
   margin-top:26px;padding-top:20px;border-top:1px solid var(--navy-2)}
-.pin{display:block;background:#12293f;border:1px solid var(--navy-2);
-  border-radius:var(--radius);padding:12px 14px 13px;text-decoration:none}
-.pin-title{display:block;font-size:14px;font-weight:700;color:#e6eef6;line-height:1.3;
+.pin{display:block;min-width:0;background:#3f4043;border:1px solid var(--navy-2);
+  border-radius:var(--radius);padding:12px 13px 13px;text-decoration:none}
+/* כותרת בשורה אחת: המפרידים מיושרים בין כל הכרטיסים. אם כותרת ארוכה חריגה - נחתכת ב-… (הטקסט המלא ב-hover) */
+.pin-title{display:block;font-size:13.5px;font-weight:700;color:#f1f0ee;line-height:1.4;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid var(--navy-2)}
-.pin-when{display:block;font-size:13.5px;color:#c3d4e4;line-height:1.5}
-.pin-when b{font-size:21px;font-weight:600;color:var(--orange);
+.pin-when{display:block;font-size:13px;color:#d4d2ce;line-height:1.5}
+.pin-when b{font-size:19px;font-weight:600;color:var(--orange);
   font-variant-numeric:tabular-nums;margin-inline-end:2px}
 .pin:hover{border-color:var(--orange)}
 .pin:hover .pin-title{color:#fff}
-.pins-note{font-size:13.5px;color:#8aa6c1;margin:12px 0 0}
+.pins-note{font-size:13.5px;color:#a7a6a3;margin:12px 0 0}
 
 /* ---------- urgent (pinned, outside the axis) ---------- */
 .urgent-strip{background:var(--orange-soft);border-bottom:1px solid var(--orange-line)}
 .urgent-strip .wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:14px;padding-bottom:14px}
 .urgent-strip p{margin:0;font-size:16px;color:var(--ink-2)}
-.urgent-btn{background:var(--orange);color:#fff;border:0;font-family:inherit;font-size:17px;font-weight:700;
+.urgent-btn{background:var(--orange-ink);color:#fff;border:0;font-family:inherit;font-size:17px;font-weight:700;
   padding:11px 22px;border-radius:var(--radius);cursor:pointer;margin-inline-start:auto}
-.urgent-btn:hover{background:var(--orange-deep)}
+.urgent-btn:hover{background:#9a480c}
 .urgent-btn:focus-visible{outline:2px solid var(--navy);outline-offset:3px}
 
 /* ---------- home: responsibility groups ---------- */
 .home-head{margin:38px 0 18px}
-.home-head h2{font-size:24.5px}
+.home-head h2{font-size:24.5px;position:relative;padding-inline-start:20px}
+.home-head h2::before{content:"";position:absolute;top:.14em;inset-inline-start:0;width:13px;height:.74em;
+  background:var(--grad-orange);clip-path:polygon(30% 0,100% 0,70% 100%,0 100%)}
 .home-head p{margin:6px 0 0;color:var(--ink-2);font-size:16.5px;max-width:64ch}
 .groups{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px}
 @media (max-width:640px){.groups{grid-template-columns:1fr}}
@@ -134,7 +155,9 @@ main{padding:0 0 90px}
   font-size:15px;color:var(--ink-3);cursor:pointer;padding:0;margin:30px 0 14px}
 .crumb:hover{color:var(--navy)}
 .view-head{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:26px}
-.view-head h2{font-size:33px}
+.view-head h2{font-size:33px;position:relative;padding-inline-start:22px}
+.view-head h2::before{content:"";position:absolute;top:.16em;inset-inline-start:0;width:14px;height:.72em;
+  background:var(--grad-orange);clip-path:polygon(30% 0,100% 0,70% 100%,0 100%)}
 .view-head p{margin:8px 0 0;color:var(--ink-2);font-size:17px;max-width:62ch}
 
 /* ---------- topic cards ---------- */
@@ -150,11 +173,11 @@ main{padding:0 0 90px}
 .topic.open .topic-body{display:block}
 .badge{font-size:11.5px;letter-spacing:.06em;padding:3px 8px;border-radius:2px;font-weight:700;flex:none}
 .badge.draft{background:var(--surface);color:var(--ink-3);border:1px solid var(--line)}
-.badge.hard{background:var(--orange);color:#fff}
+.badge.hard{background:var(--orange-ink);color:#fff}
 .field{margin-top:18px}
 .field.bare{margin-top:0}
 .field.bare p{color:var(--ink)}
-.field-label{font-size:12px;letter-spacing:.08em;color:var(--orange-deep);
+.field-label{font-size:12px;letter-spacing:.08em;color:var(--orange-ink);
   text-transform:uppercase;display:block;margin-bottom:5px;font-weight:700}
 .field p{margin:0;color:var(--ink-2)}
 .field ol{margin:0;padding-inline-start:20px;color:var(--ink-2)}
@@ -164,9 +187,9 @@ main{padding:0 0 90px}
   padding:11px 15px;margin-top:18px;font-size:16.5px;color:var(--ink-2);border-radius:0 var(--radius) var(--radius) 0}
 .callout.warn{background:var(--orange-soft);border-inline-start-color:var(--orange)}
 .actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-top:20px}
-.btn{display:inline-block;background:var(--navy);color:#fff;text-decoration:none;
+.btn{display:inline-block;background:var(--orange-ink);color:#fff;text-decoration:none;
   padding:10px 18px;border-radius:var(--radius);font-weight:600;font-size:16px}
-.btn:hover{background:#0f2439}
+.btn:hover{background:#9a480c}
 .btn.ghost{background:none;color:var(--navy);border:1px solid var(--line);font-weight:400}
 .btn.ghost:hover{border-color:var(--navy);background:var(--surface)}
 .support{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);font-size:15.5px;color:var(--ink-2)}
@@ -204,16 +227,16 @@ main{padding:0 0 90px}
 .item.done .item-text{color:var(--ink-3);text-decoration:line-through}
 .tag{display:inline-block;font-size:11.5px;letter-spacing:.06em;padding:2px 7px;border-radius:2px;
   vertical-align:2px;margin-inline-start:8px}
-.tag.hard{background:var(--orange);color:#fff}
+.tag.hard{background:var(--orange-ink);color:#fff}
 .item-link{display:inline-block;background:none;border:0;font-family:inherit;font-size:14.5px;
   color:var(--navy);cursor:pointer;padding:0;margin-top:3px;text-decoration:underline;text-underline-offset:2px}
-.item-link:hover{color:var(--orange-deep)}
+.item-link:hover{color:var(--orange-ink)}
 .item-panel{margin:12px 0 8px;padding:16px 18px;background:var(--paper);
   border:1px solid var(--line);border-inline-start:3px solid var(--navy-2);border-radius:var(--radius)}
 .item-panel .field:first-child{margin-top:0}
 .panel-more{display:inline-block;margin-top:16px;padding-top:12px;border-top:1px dashed var(--line);
   width:100%;font-size:14.5px;color:var(--navy);text-decoration:underline;text-underline-offset:2px}
-.panel-more:hover{color:var(--orange-deep)}
+.panel-more:hover{color:var(--orange-ink)}
 @keyframes flashRow{0%{background:#fdf0e2}100%{background:transparent}}
 .item.flash{animation:flashRow 2.2s ease-out}
 .topic.flash>.topic-head{animation:flashRow 2.2s ease-out}
@@ -227,7 +250,7 @@ main{padding:0 0 90px}
 .help-card .hours{font-size:14px;color:var(--ink-3);margin-top:9px}
 .help-card .sub-note{font-size:14px;color:var(--ink-2);margin-top:11px;padding-top:10px;
   border-top:1px dashed var(--line);line-height:1.5}
-.help-card .contact.mono{font-size:20.5px;font-weight:700;color:var(--orange-deep)}
+.help-card .contact.mono{font-size:20.5px;font-weight:700;color:var(--orange-ink)}
 .help-note{margin-top:24px;padding:17px 19px;background:var(--surface);
   border-inline-start:3px solid var(--navy-2);border-radius:var(--radius)}
 .help-note-lede{display:block;font-weight:700;color:var(--ink);font-size:16.5px}
@@ -258,7 +281,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 }
 @media print{
   .mast-bar,.rail-shell,.urgent-strip,.groups,.home-head,.crumb,.ck-tools,footer,.chev,
-  .item-link,.item-panel{display:none!important}
+  .item-link,.item-panel,.mast-cube{display:none!important}
   .view{display:none!important}
   .view.on{display:block!important}
   body{font-size:12pt}
@@ -272,6 +295,11 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 <body>
 
 <header class="masthead">
+  <svg class="mast-cube" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+    <polygon points="50,6 90,29 50,52 10,29" fill="#f7941e"/>
+    <polygon points="10,29 50,52 50,96 10,73" fill="#e16327"/>
+    <polygon points="90,29 50,52 50,96 90,73" fill="#9b9da0"/>
+  </svg>
   <div class="wrap mast-logo">
     <a id="logoLink" href="#" target="_blank" rel="noopener">
       <img src="logo-unit.jpg" alt="היחידה לקידום איכות ההוראה והלמידה, אוניברסיטת בן-גוריון בנגב">
@@ -302,7 +330,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 <section class="urgent-strip">
   <div class="wrap">
     <p><b id="urgentLede"></b> <span id="urgentSub"></span></p>
-    <button class="urgent-btn" id="urgentBtn" onclick="go('#/section/help')">יש לי בעיה דחופה — למי פונים?</button>
+    <button class="urgent-btn" id="urgentBtn" onclick="go('#/section/help')">יש לי בעיה דחופה - למי פונים?</button>
   </div>
 </section>
 
@@ -340,7 +368,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
     <button class="crumb"></button>
     <div class="view-head">
       <h2>למי פונים</h2>
-      <p>לפי סוג הבעיה. כשאין כתובת ייעודית — מזכירות המחלקה היא הכתובת.</p>
+      <p>לפי סוג הבעיה. כשאין כתובת ייעודית - מזכירות המחלקה היא הכתובת.</p>
     </div>
     <div class="help-grid" id="help-body"></div>
     <div class="help-note" id="help-note" hidden></div>
@@ -502,7 +530,7 @@ function renderRail(){
   });
   pins.sort((a,b)=>a.order-b.order);
   document.getElementById('pins').innerHTML = pins.map(p=>
-    `<a class="pin" href="${esc(p.href)}">
+    `<a class="pin" href="${esc(p.href)}" title="${esc(p.title)}">
        <span class="pin-title">${esc(p.title)}</span>
        <span class="pin-when"><b>${esc(p.n)}</b> ${esc(p.unit)} ${esc(p.phrase)}</span>
      </a>`).join('');
@@ -716,7 +744,7 @@ function renderSearch(q){
   });
   box.innerHTML = hits.length
     ? hits.map(h=>`<div class="hit"><a href="${esc(h.href)}"${h.ext?' target="_blank" rel="noopener"':''}>${esc(h.title)}</a><div class="where">${esc(h.where)}</div></div>`).join('')
-    : '<p class="empty">אין תוצאות. נסי מילה אחרת — למשל "כספת", "ערעור", "סילבוס".</p>';
+    : '<p class="empty">אין תוצאות. נסי מילה אחרת - למשל "כספת", "ערעור", "סילבוס".</p>';
 }
 const qi=document.getElementById('q');
 let qt;
