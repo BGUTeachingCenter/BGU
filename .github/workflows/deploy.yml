@@ -59,9 +59,10 @@ jobs:
       - name: Pick inactive color
         id: pick
         run: |
-          CURRENT=$(aws elbv2 describe-listeners --listener-arns "$LISTENER_ARN" \
-            --query 'Listeners[0].DefaultActions[0].TargetGroupArn' --output text)
-          if [ "$CURRENT" = "$BLUE_TG" ]; then
+          # Listener always forwards to BOTH TGs (weighted); active = weight > 0.
+          BLUE_W=$(aws elbv2 describe-listeners --listener-arns "$LISTENER_ARN" \
+            --query "Listeners[0].DefaultActions[0].ForwardConfig.TargetGroups[?TargetGroupArn=='${BLUE_TG}'] | [0].Weight" --output text)
+          if [ "$BLUE_W" != "0" ]; then
             echo "tg=$GREEN_TG"    >> "$GITHUB_OUTPUT"
             echo "port=8081"       >> "$GITHUB_OUTPUT"
             echo "name=site-green" >> "$GITHUB_OUTPUT"
@@ -114,7 +115,7 @@ jobs:
       - name: Swap listener to new color
         run: |
           aws elbv2 modify-listener --listener-arn "$LISTENER_ARN" \
-            --default-actions Type=forward,TargetGroupArn="${{ steps.pick.outputs.tg }}" \
-            --query 'Listeners[0].DefaultActions[0].TargetGroupArn' --output text
+            --default-actions "[{\"Type\":\"forward\",\"ForwardConfig\":{\"TargetGroups\":[{\"TargetGroupArn\":\"${{ steps.pick.outputs.tg }}\",\"Weight\":100},{\"TargetGroupArn\":\"${{ steps.pick.outputs.rollback }}\",\"Weight\":0}]}}]" \
+            --query 'Listeners[0].DefaultActions[0].ForwardConfig.TargetGroups[].[TargetGroupArn,Weight]' --output text
           echo "Deployed ${GITHUB_SHA::7} -> ${{ steps.pick.outputs.name }}"
           echo "Instant rollback: swap listener back to ${{ steps.pick.outputs.rollback }}"
