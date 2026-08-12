@@ -198,6 +198,12 @@
       gap: 24px;
       align-items: start;
     }
+    /* כל טור הוא ערימת כרטיסיות עצמאית וצמודה */
+    .grid__col {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
 
     .card {
       background: #ffffff;
@@ -366,19 +372,13 @@
   <!-- ===================== רשת הקטגוריות ===================== -->
   <main class="grid">
 
+    <!-- טור 1 (ימין): דפים אינטראקטיביים + סימולציות -->
+    <div class="grid__col">
     <section class="card">
-      <h2 class="card__title">📖 בוטים ללמידה</h2>
-      <a class="link" href="https://chatgpt.com/g/g-6834645ece2c8191873a27515e2b0f96-svtsyv-ryyt" target="_blank">
-        <span class="link__chip"><span>✍️</span></span>
-        <span class="link__label">סוציו-רייט - שיפור כתיבה</span>
-      </a>
-      <a class="link" href="https://chatgpt.com/g/g-67f77ae5b5788191b49e5fd18da446f0-ktybh-qdmyt-myzvg-r-yvnvt-d-r-y-l-lyn" target="_blank">
-        <span class="link__chip"><span>🧠</span></span>
-        <span class="link__label">כתיבה אקדמית: מיזוג רעיונות</span>
-      </a>
-      <a class="link" href="flashcards/">
-        <span class="link__chip"><span>📑</span></span>
-        <span class="link__label">מחולל כרטיסיות שינון</span>
+      <h2 class="card__title">💡 דפים אינטראקטיביים</h2>
+      <a class="link" href="https://claude.ai/public/artifacts/e43c7bc6-ccb4-4986-8cce-fd54919df2f9">
+        <span class="link__chip"><span>📖</span></span>
+        <span class="link__label">שפינוזה</span>
       </a>
     </section>
 
@@ -401,12 +401,19 @@
         <span class="link__label">גידול חיידקים</span>
       </a>
     </section>
+    </div>
 
+    <!-- טור 2 (אמצע): משחקים -->
+    <div class="grid__col">
     <section class="card">
       <h2 class="card__title">🎮 משחקים</h2>
       <a class="link" href="syllogism1/">
         <span class="link__chip"><span>🧩</span></span>
         <span class="link__label">מבוך ההסקים 1</span>
+      </a>
+      <a class="link" href="syllogism2/">
+        <span class="link__chip"><span>🏛️</span></span>
+        <span class="link__label">מבוך ההסקים 2 - גרסת הפילוסופים</span>
       </a>
       <a class="link" href="investments/">
         <span class="link__chip"><span>📈</span></span>
@@ -416,17 +423,36 @@
         <span class="link__chip"><span>🎨</span></span>
         <span class="link__label">מבחן סטרופ</span>
       </a>
+      <a class="link" href="flanker/">
+        <span class="link__chip"><span>🎯</span></span>
+        <span class="link__label">תחרות פלאנקר</span>
+      </a>
       <a class="link" href="prisoner/">
         <span class="link__chip"><span>🚔</span></span>
         <span class="link__label">דילמת האסיר</span>
       </a>
+      <a class="link" href="snell2/">
+        <span class="link__chip"><span>🏊</span></span>
+        <span class="link__label">חוק סנל - משחק המצילים</span>
+      </a>
     </section>
+    </div>
 
+    <!-- טור 3 (שמאל): בוטים ללמידה + משחקי תפקידים -->
+    <div class="grid__col">
     <section class="card">
-      <h2 class="card__title">💡 דפים אינטראקטיביים</h2>
-      <a class="link" href="https://claude.ai/public/artifacts/e43c7bc6-ccb4-4986-8cce-fd54919df2f9">
-        <span class="link__chip"><span>📖</span></span>
-        <span class="link__label">שפינוזה</span>
+      <h2 class="card__title">📖 בוטים ללמידה</h2>
+      <a class="link" href="https://chatgpt.com/g/g-6834645ece2c8191873a27515e2b0f96-svtsyv-ryyt" target="_blank">
+        <span class="link__chip"><span>✍️</span></span>
+        <span class="link__label">סוציו-רייט - שיפור כתיבה</span>
+      </a>
+      <a class="link" href="https://chatgpt.com/g/g-67f77ae5b5788191b49e5fd18da446f0-ktybh-qdmyt-myzvg-r-yvnvt-d-r-y-l-lyn" target="_blank">
+        <span class="link__chip"><span>🧠</span></span>
+        <span class="link__label">כתיבה אקדמית: מיזוג רעיונות</span>
+      </a>
+      <a class="link" href="flashcards/">
+        <span class="link__chip"><span>📑</span></span>
+        <span class="link__label">מחולל כרטיסיות שינון</span>
       </a>
     </section>
 
@@ -441,6 +467,7 @@
         <span class="link__label">סימולטור דילמות פדגוגיות</span>
       </a>
     </section>
+    </div>
 
     <!-- ====== קטגוריה מוסתרת (מוכנה להפעלה בעתיד): למידה מרחוק בתמיכת AI ======
     <section class="card">
