@@ -59,70 +59,90 @@
       border-radius: 8px;
     }
 
-    /* ===================== HERO ===================== */
+    /* ===================== HERO דרמטי (דף פתיחה) ===================== */
     .hero {
       position: relative;
       overflow: hidden;
-      padding: 56px 24px 40px;
+      padding: 66px 24px 84px;
       text-align: center;
+      background: linear-gradient(135deg, #e16327 0%, #f7941e 100%);
+      color: #fff;
     }
-    .hero__deco { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-    .hero__deco span { position: absolute; display: block; }
-    .deco-1 { width: 200px; height: 380px; top: -90px; right: -50px;
-              background: var(--bgu-orange); opacity: .13;
-              clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%); }
-    .deco-2 { width: 150px; height: 320px; top: -60px; right: 90px;
-              background: var(--bgu-gray-medium); opacity: .10;
-              clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%); }
-    .deco-3 { width: 170px; height: 340px; top: -70px; left: -50px;
-              background: var(--bgu-orange); opacity: .11;
-              clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%); }
-    .deco-4 { width: 120px; height: 280px; top: -40px; left: 90px;
-              background: var(--bgu-gray-light); opacity: .28;
-              clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%); }
+    /* שכבות מקביליות אלכסוניות - מוטיב הפרספקטיבה, בעומק ובתנועה */
+    .hero__deco { position: absolute; inset: -10% -5%; pointer-events: none; z-index: 0; }
+    .hero__deco span {
+      position: absolute; display: block;
+      clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%);
+      will-change: transform;
+    }
+    .pl-1 { width: 340px; height: 620px; top: -80px; right: -60px;  background: #ffffff; opacity: .10; }
+    .pl-2 { width: 260px; height: 560px; top: -40px; right: 150px;  background: #58595b; opacity: .12; }
+    .pl-3 { width: 300px; height: 600px; top: -70px; left: -70px;   background: #ffffff; opacity: .13; }
+    .pl-4 { width: 200px; height: 480px; top: 20px;  left: 140px;   background: #c94f1e; opacity: .25; }
+    .pl-5 { width: 150px; height: 380px; bottom: -120px; right: 34%; background: #ffffff; opacity: .08; }
 
     .hero > * { position: relative; z-index: 1; }
 
-    .hero__logo {
-      width: min(320px, 56%);
-      height: auto;
-      margin: 0 auto 10px;
-      display: block;
-      transition: transform 0.3s ease;
+    .hero__plate {
+      display: inline-block;
+      background: #fff;
+      padding: 16px 26px;
+      border-radius: 16px;
+      box-shadow: 0 12px 34px rgba(88, 89, 91, 0.28);
+      margin-bottom: 22px;
     }
-    .hero__logo:hover { transform: scale(1.04); }
+    .hero__logo {
+      width: min(230px, 62vw);
+      height: auto;
+      display: block;
+    }
 
     .hero__eyebrow {
       font-size: 14px;
       font-weight: 700;
-      letter-spacing: 0.4px;
-      color: var(--bgu-orange-deep);
-      margin: 4px 0 12px;
+      letter-spacing: 1.2px;
+      color: #fff;
+      opacity: .92;
+      margin: 0 0 10px;
+      text-shadow: 0 1px 2px rgba(0,0,0,.15);
     }
-
     .hero__title {
-      font-size: clamp(26px, 4.2vw, 40px);
+      font-size: clamp(30px, 5.2vw, 52px);
       font-weight: 800;
-      color: var(--bgu-text);
-      line-height: 1.15;
-      margin: 0 auto 12px;
-      max-width: 760px;
+      color: #fff;
+      line-height: 0.98;
+      margin: 0 auto 14px;
+      max-width: 820px;
+      text-shadow: 0 2px 8px rgba(0,0,0,.16);
     }
-
     .hero__sub {
-      font-size: clamp(16px, 2.2vw, 19px);
-      font-weight: 400;
-      color: var(--bgu-gray-medium);
+      font-size: clamp(16px, 2.3vw, 20px);
+      font-weight: 600;
+      color: #fff;
+      opacity: .95;
       max-width: 640px;
       margin: 0 auto;
       line-height: 1.5;
+      text-shadow: 0 1px 3px rgba(0,0,0,.16);
+    }
+
+    /* גל אלכסוני בתחתית ה-hero - מעבר לאזור הבהיר */
+    .hero__edge {
+      position: absolute;
+      left: 0; right: 0; bottom: -1px;
+      height: 46px;
+      background: var(--bg);
+      clip-path: polygon(0 55%, 100% 0, 100% 100%, 0 100%);
+      z-index: 1;
     }
 
     /* ===================== שערים גדולים ===================== */
     .gates {
       max-width: 780px;
-      margin: 38px auto 0;
+      margin: -34px auto 0;
       padding: 0 24px;
+      position: relative;
+      z-index: 2;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 22px;
@@ -140,47 +160,31 @@
       text-align: right;
       background: #ffffff;
       border: 1px solid #eee;
-      box-shadow: 0 6px 18px rgba(88, 89, 91, 0.07);
+      box-shadow: 0 10px 26px rgba(88, 89, 91, 0.10);
       transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     }
-    .gate::after { /* פס אלכסוני - מוטיב הפרספקטיבה */
+    .gate::after {
       content: "";
       position: absolute;
       top: 0; bottom: 0; left: -14px;
       width: 82px;
       background: var(--bgu-orange-tint);
-      opacity: .45;
+      opacity: .5;
       clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%);
       pointer-events: none;
     }
     .gate:hover {
-      transform: translateY(-4px);
+      transform: translateY(-5px);
       border-color: var(--bgu-orange);
-      box-shadow: 0 12px 26px rgba(247, 148, 30, 0.18);
+      box-shadow: 0 16px 32px rgba(247, 148, 30, 0.20);
     }
     .gate > * { position: relative; z-index: 1; }
 
-    .gate__icon {
-      font-size: 40px;
-      line-height: 1;
-      flex: 0 0 auto;
-    }
+    .gate__icon { font-size: 40px; line-height: 1; flex: 0 0 auto; }
     .gate__text { display: flex; flex-direction: column; }
-    .gate__title {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--bgu-text);
-      line-height: 1.15;
-    }
-    .gate__desc {
-      font-size: 14.5px;
-      font-weight: 400;
-      color: var(--bgu-gray-medium);
-      margin-top: 6px;
-      line-height: 1.45;
-    }
+    .gate__title { font-size: 22px; font-weight: 800; color: var(--bgu-text); line-height: 1.15; }
+    .gate__desc { font-size: 14.5px; font-weight: 400; color: var(--bgu-gray-medium); margin-top: 6px; line-height: 1.45; }
 
-    /* שער "בקרוב" - מושבת */
     .gate--soon {
       background: #f6f5f3;
       border-style: dashed;
@@ -189,97 +193,95 @@
     }
     .gate--soon::after { opacity: .25; }
     .gate--soon:hover { transform: none; border-color: var(--bgu-gray-light); box-shadow: none; }
-    .gate--soon .gate__title,
-    .gate--soon .gate__icon { color: var(--bgu-gray-medium); filter: grayscale(0.3); }
+    .gate--soon .gate__title, .gate--soon .gate__icon { color: var(--bgu-gray-medium); filter: grayscale(0.3); }
     .gate__badge {
       display: inline-block;
       align-self: flex-start;
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 12px; font-weight: 700;
       color: var(--bgu-gray-medium);
       background: var(--bgu-gray-light);
-      padding: 3px 12px;
-      border-radius: 999px;
-      margin-top: 10px;
+      padding: 3px 12px; border-radius: 999px; margin-top: 10px;
     }
 
     /* ===================== קישורים משניים ===================== */
     .secondary {
-      max-width: 900px;
-      margin: 26px auto 0;
+      max-width: 780px;
+      margin: 24px auto 0;
       padding: 0 24px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
     }
     .slink {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      padding: 10px 18px;
-      border-radius: 12px;
-      background: #ffffff;
-      border: 1px solid #eee;
-      text-decoration: none;
-      color: var(--bgu-text);
-      font-weight: 700;
-      font-size: 15px;
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 10px 18px; border-radius: 12px;
+      background: #ffffff; border: 1px solid #eee;
+      text-decoration: none; color: var(--bgu-text);
+      font-weight: 700; font-size: 15px;
       box-shadow: 0 2px 6px rgba(88, 89, 91, 0.04);
       transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
-    .slink:hover {
-      transform: translateY(-2px);
-      border-color: var(--bgu-orange);
-      background: #fffdf9;
-    }
+    .slink:hover { transform: translateY(-2px); border-color: var(--bgu-orange); background: #fffdf9; }
     .slink__ico { font-size: 18px; line-height: 1; }
+
+    /* ===================== באנר המוטו (נפרד מהלוגו) ===================== */
+    .mottoband {
+      position: relative;
+      overflow: hidden;
+      max-width: 900px;
+      margin: 48px auto 0;
+      padding: 30px 34px;
+      border-radius: 20px;
+      background: #fff;
+      border: 1px solid #f0e6da;
+      text-align: center;
+    }
+    .mottoband::before {
+      content: "";
+      position: absolute; top: 0; bottom: 0; right: -18px;
+      width: 120px;
+      background: var(--bgu-gradient-1);
+      opacity: .12;
+      clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%);
+    }
+    .mottoband__text {
+      position: relative;
+      font-size: clamp(20px, 3vw, 30px);
+      font-weight: 800;
+      color: var(--bgu-orange-deep);
+      line-height: 1.1;
+    }
 
     /* ===================== פוטר ===================== */
     footer {
-      margin-top: 48px;
+      margin-top: 40px;
       padding: 24px;
       text-align: center;
       color: var(--bgu-gray-medium);
       font-size: 14px;
       border-top: 1px solid var(--bgu-gray-light);
     }
-    .hero__motto {
-      display: inline-block;
-      font-size: clamp(16px, 2.2vw, 20px);
-      font-weight: 700;
-      color: var(--bgu-orange-deep);
-    }
-    .hero__motto::before {
-      content: "";
-      display: inline-block;
-      width: 24px; height: 11px;
-      margin-left: 10px;
-      vertical-align: middle;
-      background: var(--bgu-gradient-1);
-      clip-path: polygon(30% 0, 100% 0, 70% 100%, 0 100%);
-    }
 
     @media (max-width: 700px) {
-      .deco-2, .deco-4 { display: none; }
-      .hero { padding: 40px 18px 32px; }
+      .pl-2, .pl-5 { display: none; }
+      .hero { padding: 48px 18px 76px; }
       .gates { grid-template-columns: 1fr; }
     }
 
     @media (prefers-reduced-motion: no-preference) {
-      .hero__logo, .hero__eyebrow, .hero__title, .hero__sub, .gates, .secondary {
+      .pl-1 { animation: drift1 13s ease-in-out infinite alternate; }
+      .pl-3 { animation: drift2 16s ease-in-out infinite alternate; }
+      .pl-4 { animation: drift1 11s ease-in-out infinite alternate; }
+      .hero__plate, .hero__eyebrow, .hero__title, .hero__sub, .gates, .secondary {
         animation: fadeUp 0.7s ease both;
       }
       .hero__eyebrow { animation-delay: 0.05s; }
       .hero__title   { animation-delay: 0.10s; }
       .hero__sub     { animation-delay: 0.18s; }
-      .gates         { animation-delay: 0.26s; }
-      .secondary     { animation-delay: 0.34s; }
+      .gates         { animation-delay: 0.28s; }
+      .secondary     { animation-delay: 0.36s; }
     }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: none; }
-    }
+    @keyframes drift1 { from { transform: translateY(0) rotate(0deg); } to { transform: translateY(26px) rotate(2deg); } }
+    @keyframes drift2 { from { transform: translateY(0) rotate(0deg); } to { transform: translateY(-24px) rotate(-2deg); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   </style>
 </head>
 <body>
@@ -287,23 +289,24 @@
   <!-- ===================== HERO ===================== -->
   <header class="hero">
     <div class="hero__deco" aria-hidden="true">
-      <span class="deco-1"></span>
-      <span class="deco-2"></span>
-      <span class="deco-3"></span>
-      <span class="deco-4"></span>
+      <span class="pl-1"></span>
+      <span class="pl-2"></span>
+      <span class="pl-3"></span>
+      <span class="pl-4"></span>
+      <span class="pl-5"></span>
     </div>
 
-    <a href="https://www.bgu.ac.il/u/academic-affairs/academicdev/" target="_blank">
-      <img src="logo.png" alt="לוגו אוניברסיטת בן-גוריון בנגב" class="hero__logo">
-    </a>
+    <span class="hero__plate">
+      <a href="https://www.bgu.ac.il/u/academic-affairs/academicdev/" target="_blank">
+        <img src="logo.png" alt="לוגו אוניברסיטת בן-גוריון בנגב" class="hero__logo">
+      </a>
+    </span>
 
     <p class="hero__eyebrow">אוניברסיטת בן-גוריון בנגב</p>
-
     <h1 class="hero__title">היחידה לקידום איכות ההוראה והלמידה</h1>
+    <p class="hero__sub">כל הכלים במקום אחד — בוטים, בדיקת תרגילים, ספרי קורס וסימולציות</p>
 
-    <p class="hero__sub">
-      כל הכלים במקום אחד — בוטים, בדיקת תרגילים, ספרי קורס וסימולציות
-    </p>
+    <div class="hero__edge" aria-hidden="true"></div>
   </header>
 
   <!-- ===================== שערים גדולים ===================== -->
@@ -346,18 +349,16 @@
 
   <!-- ===================== קישורים משניים ===================== -->
   <nav class="secondary" aria-label="קישורים נוספים">
-    <a class="slink" href="site-map/">
-      <span class="slink__ico">🧭</span>
-      מורה נבוכים
-    </a>
-    <a class="slink" href="guidelines.html">
-      <span class="slink__ico">📜</span>
-      קווים מנחים
-    </a>
+    <a class="slink" href="site-map/"><span class="slink__ico">🧭</span> מורה נבוכים</a>
+    <a class="slink" href="guidelines.html"><span class="slink__ico">📜</span> קווים מנחים</a>
   </nav>
 
+  <!-- ===================== המוטו ===================== -->
+  <section class="mottoband" aria-label="מוטו">
+    <p class="mottoband__text">כשמשנים פרספקטיבה, מגלים עולמות.</p>
+  </section>
+
   <footer>
-    <span class="hero__motto">כשמשנים פרספקטיבה, מגלים עולמות.</span>
     © היחידה לקידום איכות ההוראה והלמידה | אוניברסיטת בן גוריון בנגב, 2026
   </footer>
 
