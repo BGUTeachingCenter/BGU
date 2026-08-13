@@ -1,129 +1,13 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>תחרות על סובסטרט בין שני חיידקים</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; direction: rtl; }
-        .slider-container { margin: 10px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=../simulations/biology/">
+  <link rel="canonical" href="../simulations/biology/">
+  <title>הדף עבר לכתובת חדשה</title>
 </head>
 <body>
-    <h2>מודל זה מכיל מערכת המכילה שני חיידקים הגדלים על אותו הסובטרט. והשינוי בכמות החיידקים מכל סוג כתלות בקבועים על בסיס מודל מונוד</h2>
-
-    <div class="slider-container">
-        μmax חיידק 1: <input type="range" id="muMax1" min="0.1" max="1" step="0.05" value="0.5">
-        <span id="muMax1Val">0.5</span>
-    </div>
-    <div class="slider-container">
-        Ks חיידק 1: <input type="range" id="ks1" min="0.01" max="5" step="0.1" value="0.5">
-        <span id="ks1Val">0.5</span>
-    </div>
-    <div class="slider-container">
-        שיעור תמותה חיידק 1: <input type="range" id="deathRate1" min="0" max="0.5" step="0.01" value="0.1">
-        <span id="deathRate1Val">0.1</span>
-    </div>
-
-    <div class="slider-container">
-        μmax חיידק 2: <input type="range" id="muMax2" min="0.1" max="1" step="0.05" value="0.5">
-        <span id="muMax2Val">0.5</span>
-    </div>
-    <div class="slider-container">
-        Ks חיידק 2: <input type="range" id="ks2" min="0.01" max="5" step="0.1" value="0.5">
-        <span id="ks2Val">0.5</span>
-    </div>
-    <div class="slider-container">
-        שיעור תמותה חיידק 2: <input type="range" id="deathRate2" min="0" max="0.5" step="0.01" value="0.1">
-        <span id="deathRate2Val">0.1</span>
-    </div>
-
-    <div id="graph"></div>
-
-    <script>
-        function monod(muMax, Ks, S) {
-            return muMax * S / (Ks + S);
-        }
-
-        function simulate(muMax1, Ks1, deathRate1, muMax2, Ks2, deathRate2) {
-            let t = [], X1live = [], X1total = [], X2live = [], X2total = [], S = [];
-            let dt = 0.1, Tmax = 20;
-            let s = 10, x1live = 0.1, x1total = 0.1, x2live = 0.1, x2total = 0.1;
-
-            for (let time = 0; time <= Tmax; time += dt) {
-                t.push(time);
-                X1live.push(x1live);
-                X1total.push(x1total);
-                X2live.push(x2live);
-                X2total.push(x2total);
-                S.push(s);
-
-                let mu1 = monod(muMax1, Ks1, s);
-                let mu2 = monod(muMax2, Ks2, s);
-
-                let growth1 = mu1 * x1live * dt;
-                let death1 = deathRate1 * x1live * dt;
-
-                let growth2 = mu2 * x2live * dt;
-                let death2 = deathRate2 * x2live * dt;
-
-                let ds = -(growth1 + growth2);
-
-                x1total += growth1;
-                x1live = Math.max(x1live + growth1 - death1, 0);
-
-                x2total += growth2;
-                x2live = Math.max(x2live + growth2 - death2, 0);
-
-                s = Math.max(s + ds, 0);
-            }
-
-            return { t, X1live, X1total, X2live, X2total, S };
-        }
-
-        function plot(muMax1, Ks1, deathRate1, muMax2, Ks2, deathRate2) {
-            const data = simulate(muMax1, Ks1, deathRate1, muMax2, Ks2, deathRate2);
-
-            const traces = [
-                { x: data.t, y: data.X1live, name: 'חיידק 1 - חיים', type: 'scatter', line: { color: 'green', dash: 'solid' } },
-                { x: data.t, y: data.X1total, name: 'חיידק 1 - אבסולוטי', type: 'scatter', line: { color: 'green', dash: 'dot' } },
-                { x: data.t, y: data.X2live, name: 'חיידק 2 - חיים', type: 'scatter', line: { color: 'blue', dash: 'solid' } },
-                { x: data.t, y: data.X2total, name: 'חיידק 2 - אבסולוטי', type: 'scatter', line: { color: 'blue', dash: 'dot' } },
-                { x: data.t, y: data.S, name: 'סובסטרט', type: 'scatter', line: { color: 'red', dash: 'dot' } }
-            ];
-
-            Plotly.newPlot('graph', traces, {
-                title: 'השוואת גידול - תאים חיים מול אבסולוטיים',
-                xaxis: { title: 'זמן (שעות)' },
-                yaxis: { title: 'ריכוז תאים / סובסטרט' }
-            });
-        }
-
-        const sliders = ['muMax1', 'ks1', 'deathRate1', 'muMax2', 'ks2', 'deathRate2'];
-        sliders.forEach(id => {
-            document.getElementById(id).addEventListener('input', update);
-        });
-
-        function update() {
-            let muMax1 = parseFloat(document.getElementById('muMax1').value);
-            let ks1 = parseFloat(document.getElementById('ks1').value);
-            let deathRate1 = parseFloat(document.getElementById('deathRate1').value);
-
-            let muMax2 = parseFloat(document.getElementById('muMax2').value);
-            let ks2 = parseFloat(document.getElementById('ks2').value);
-            let deathRate2 = parseFloat(document.getElementById('deathRate2').value);
-
-            document.getElementById('muMax1Val').innerText = muMax1;
-            document.getElementById('ks1Val').innerText = ks1;
-            document.getElementById('deathRate1Val').innerText = deathRate1;
-            document.getElementById('muMax2Val').innerText = muMax2;
-            document.getElementById('ks2Val').innerText = ks2;
-            document.getElementById('deathRate2Val').innerText = deathRate2;
-
-            plot(muMax1, ks1, deathRate1, muMax2, ks2, deathRate2);
-        }
-
-        update();  // רנדר ראשוני
-    </script>
+  <p>הדף עבר לכתובת חדשה. אם ההעברה לא בוצעה אוטומטית,
+     <a href="../simulations/biology/">לחצו כאן להמשך</a>.</p>
 </body>
 </html>

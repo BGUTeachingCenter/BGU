@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>סימולציית מטוטלת עם פונקציית תמסורת</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+        .simulation-container {
+            display: flex;
+            gap: 20px;
+        }
+        .pendulum-container {
+            flex: 1;
+            text-align: center;
+        }
+        .pendulum {
+            width: 10px;
+            height: 150px;
+            background-color: gray;
+            margin: auto;
+            transform-origin: top center;
+            position: relative;
+        }
+        .pivot {
+            width: 12px;
+            height: 12px;
+            background-color: black;
+            border-radius: 50%;
+            position: absolute;
+            top: -6px;
+            left: -1px;
+        }
+        .weight {
+            width: 30px;
+            height: 30px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            bottom: -15px;
+            left: -10px;
+        }
+        .graph-container {
+            flex: 2;
+            height: 300px;
+            width: 500px;
+            position: relative;
+        }
+        canvas#responseChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        .control-group {
+            margin-bottom: 10px;
+        }
+        .explanation {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>סימולציה של מטוטלת עם פונקציית תמסורת מסדר שני</h1>
+
+    <div class="simulation-container">
+        <div class="pendulum-container">
+            <h3>מטוטלת</h3>
+            <div class="pendulum" id="pendulum">
+                <div class="pivot"></div>
+                <div class="weight"></div>
+            </div>
+        </div>
+
+        <div class="graph-container">
+            <h3>תגובת המערכת</h3>
+            <canvas id="responseChart"></canvas>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label>
+                תדירות טבעית (ωₙ):
+                <span class="value-display" id="omegaValue">2.0</span> rad/sec
+            </label>
+            <input type="range" id="omegaSlider" min="0.5" max="5" step="0.1" value="2.0">
+        </div>
+
+        <div class="control-group">
+            <label>
+                יחס ריסון (ζ):
+                <span class="value-display" id="dampingValue">0.1</span>
+            </label>
+            <input type="range" id="dampingSlider" min="0" max="2" step="0.05" value="0.1">
+        </div>
+
+        <div class="control-group">
+            <label>
+                זווית התחלתית:
+                <span class="value-display" id="angleValue">30</span> מעלות
+            </label>
+            <input type="range" id="angleSlider" min="5" max="60" step="1" value="30">
+        </div>
+
+        <div class="control-group">
+            <button id="resetBtn" style="padding: 6px 12px; background-color: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">אפס סימולציה</button>
+        </div>
+    </div>
+
+    <div class="explanation">
+        <h2>הסבר מתמטי</h2>
+        <p>
+            פונקציית התמסורת מסדר שני עבור מערכת מטוטלת מתארת את היחס בין הקלט (זווית התחלתית) לבין הפלט (תנועת המטוטלת) במישור התדר.
+            הצורה הסטנדרטית של פונקציית תמסורת מסדר שני היא:
+        </p>
+        <p dir="ltr" style="text-align: center;">
+            G(s) = ω²ₙ / (s² + 2ζωₙs + ω²ₙ)
+        </p>
+        <p>
+            כאשר:
+        </p>
+        <ul>
+            <li>ωₙ היא התדירות הטבעית של המערכת (rad/sec)</li>
+            <li>ζ הוא יחס הריסון (damping ratio)</li>
+        </ul>
+        <p>
+            כאשר יחס הריסון:
+        </p>
+        <ul>
+            <li>ζ &lt; 1: המערכת תתנהג באופן תת-ריסוני (under-damped) ותציג תנודות</li>
+            <li>ζ = 1: המערכת תתנהג באופן ריסוני קריטי (critically damped)</li>
+            <li>ζ &gt; 1: המערכת תתנהג באופן יתר-ריסוני (over-damped)</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    let omega = 2.0;
+    let damping = 0.1;
+    let initialAngle = 30;
+
+    let currentAngle = 0;
+    let velocity = 0;
+    let time = 0;
+    const timeStep = 0.016;
+
+    let responseData = [];
+    let chart;
+
+    function degreesToRadians(degrees) {
+        return degrees * Math.PI / 180;
+    }
+
+    function initSimulation() {
+        omega = parseFloat(document.getElementById("omegaSlider").value);
+        damping = parseFloat(document.getElementById("dampingSlider").value);
+        initialAngle = parseFloat(document.getElementById("angleSlider").value);
+
+        document.getElementById("omegaValue").textContent = omega.toFixed(1);
+        document.getElementById("dampingValue").textContent = damping.toFixed(2);
+        document.getElementById("angleValue").textContent = initialAngle.toFixed(0);
+
+        currentAngle = degreesToRadians(initialAngle);
+        velocity = 0;
+        time = 0;
+        responseData = [];
+
+        updatePendulum();
+    }
+
+    function updatePendulum() {
+        const pendulum = document.getElementById("pendulum");
+        pendulum.style.transform = `rotate(${currentAngle * 180 / Math.PI}deg)`;
+    }
+
+    function updateSimulation() {
+        const angularAcceleration = -Math.pow(omega, 2) * Math.sin(currentAngle) - 2 * damping * omega * velocity;
+        velocity += angularAcceleration * timeStep;
+        currentAngle += velocity * timeStep;
+
+        updatePendulum();
+
+        responseData.push({
+            x: time,
+            y: currentAngle * 180 / Math.PI
+        });
+
+        updateChart();
+        time += timeStep;
+        requestAnimationFrame(updateSimulation);
+    }
+
+    function initChart() {
+        const ctx = document.getElementById("responseChart").getContext("2d");
+
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'זווית המטוטלת (מעלות)',
+                    data: responseData,
+                    borderColor: '#2196F3',
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                animation: false,
+                responsive: false,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        title: {
+                            display: true,
+                            text: 'זמן (שניות)'
+                        },
+                        min: 0,
+                        max: 15
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'זווית (מעלות)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+
+    function updateChart() {
+        chart.data.datasets[0].data = responseData.map(point => ({
+            x: point.x,
+            y: point.y
+        }));
+        chart.update();
+    }
+
+    window.onload = function() {
+        initChart();
+        initSimulation();
+
+        document.getElementById("omegaSlider").addEventListener("input", function () {
+            omega = parseFloat(this.value);
+            document.getElementById("omegaValue").textContent = omega.toFixed(1);
+        });
+
+        document.getElementById("dampingSlider").addEventListener("input", function () {
+            damping = parseFloat(this.value);
+            document.getElementById("dampingValue").textContent = damping.toFixed(2);
+        });
+
+        document.getElementById("angleSlider").addEventListener("input", function () {
+            initialAngle = parseFloat(this.value);
+            document.getElementById("angleValue").textContent = initialAngle.toFixed(0);
+        });
+
+        document.getElementById("resetBtn").addEventListener("click", initSimulation);
+        updateSimulation();
+    };
+</script>
+</body>
+</html>

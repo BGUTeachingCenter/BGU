@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ניסוי מולטי-טאסקינג | בלונים וקריאה</title>
+<style>
+  :root {
+    --bg: #f8f7f4;
+    --white: #ffffff;
+    --black: #1a1a1a;
+    --gray-dark: #3a3a3a;
+    --gray-mid: #6b6b6b;
+    --gray-light: #c8c8c8;
+    --gray-border: #e2e2e2;
+    --correct: #2d7a3a;
+    --error: #b83232;
+    --font-mono: 'Courier New', Courier, monospace;
+    --font-body: Georgia, 'Times New Roman', serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--black);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+    direction: rtl;
+  }
+
+  /* HEADER */
+  .lab-header {
+    width: 100%; max-width: 860px;
+    border-bottom: 2px solid var(--black);
+    padding-bottom: 14px; margin-bottom: 28px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .lab-subtitle { font-family: var(--font-mono); font-size: 12px; color: var(--gray-mid); letter-spacing: 0.1em; text-transform: uppercase; }
+  .lab-title { font-size: 22px; font-weight: bold; }
+
+  /* CARD */
+  .card {
+    background: var(--white); border: 1px solid var(--gray-border);
+    border-radius: 2px; width: 100%; max-width: 860px;
+    padding: 32px 36px; margin-bottom: 20px;
+  }
+
+  /* INTRO */
+  .intro-section { margin-bottom: 24px; }
+  .intro-section h2 { font-size: 18px; margin-bottom: 10px; }
+  .intro-section p { font-size: 15px; line-height: 1.7; color: var(--gray-dark); margin-bottom: 8px; }
+  .task-list { list-style: none; border: 1px solid var(--gray-border); border-radius: 2px; overflow: hidden; margin-top: 12px; }
+  .task-list li { padding: 12px 16px; font-size: 14px; line-height: 1.5; border-bottom: 1px solid var(--gray-border); display: flex; gap: 12px; align-items: flex-start; }
+  .task-list li:last-child { border-bottom: none; }
+  .task-num { font-family: var(--font-mono); font-size: 11px; background: var(--black); color: white; padding: 2px 6px; border-radius: 1px; flex-shrink: 0; margin-top: 2px; }
+  .note-box { background: #f0f0f0; border-right: 3px solid var(--gray-mid); padding: 12px 14px; font-size: 13px; color: var(--gray-dark); line-height: 1.6; margin-top: 16px; }
+
+  /* TRIAL HEADER */
+  .trial-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--gray-border);
+  }
+  .trial-label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-mid); }
+  .trial-title { font-size: 17px; font-weight: bold; margin-top: 4px; }
+  .timer-block { text-align: center; }
+  .timer-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-mid); margin-bottom: 3px; }
+  .timer-display { font-family: var(--font-mono); font-size: 36px; font-weight: bold; line-height: 1; }
+
+  /* STATS ROW */
+  .stats-row {
+    display: flex; gap: 24px; margin-bottom: 12px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--gray-mid);
+  }
+  .stat-item { display: flex; gap: 6px; align-items: center; }
+  .stat-val { font-weight: bold; color: var(--black); font-size: 14px; }
+  .stat-val.popped { color: var(--correct); }
+  .stat-val.missed { color: var(--error); }
+
+  /* BALLOON ARENA */
+  .balloon-arena {
+    position: relative;
+    width: 100%; height: 300px;
+    background: #fafafa;
+    border: 1px solid var(--gray-border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .arena-line {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 3px; background: #e0e0e0;
+  }
+
+  /* BALLOON SIZE — default (touch) */
+  :root {
+    --balloon-w: 52px;
+    --balloon-h: 52px;
+    --balloon-wrap-h: 62px;
+    --balloon-font: 22px;
+  }
+  /* Mouse mode — larger balloons */
+  body.mouse-mode {
+    --balloon-w: 76px;
+    --balloon-h: 76px;
+    --balloon-wrap-h: 88px;
+    --balloon-font: 32px;
+  }
+
+  /* BALLOON */
+  .balloon {
+    position: absolute;
+    width: var(--balloon-w); height: var(--balloon-wrap-h);
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.08s;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .balloon:active { transform: scale(0.92); }
+  .balloon-body {
+    width: var(--balloon-w); height: var(--balloon-h);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: var(--balloon-font);
+    box-shadow: inset -6px -6px 12px rgba(0,0,0,0.15);
+    transition: transform 0.1s;
+    position: relative;
+  }
+  .balloon-body::after {
+    content: '';
+    position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 8px solid var(--knot-color, #888);
+  }
+  .balloon-string {
+    width: 1px; height: 10px;
+    background: #aaa;
+  }
+  @keyframes floatUp {
+    0%   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+  }
+  .balloon.flash-wrong .balloon-body {
+    box-shadow: 0 0 0 3px #b83232, inset -6px -6px 12px rgba(0,0,0,0.15);
+  }
+  .balloon.pop {
+    animation: popAnim 0.25s ease forwards;
+    pointer-events: none;
+  }
+  .balloon.miss {
+    animation: missAnim 0.3s ease forwards;
+    pointer-events: none;
+  }
+  @keyframes popAnim {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.6; }
+    100% { transform: scale(0.1); opacity: 0; }
+  }
+  @keyframes missAnim {
+    0% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(20px); }
+  }
+
+  /* SENTENCE AREA */
+  .sentence-area {
+    background: #ffffff;
+    border: 1px solid var(--gray-border);
+    border-radius: 2px;
+    padding: 20px 24px;
+    min-height: 80px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    gap: 14px;
+  }
+  .sentence-text {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--black);
+    max-width: 680px;
+  }
+  .sentence-text.hidden { opacity: 0; }
+  .sentence-counter {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--gray-mid); letter-spacing: 0.08em;
+  }
+  .btn-next {
+    padding: 9px 24px;
+    font-family: var(--font-mono); font-size: 12px;
+    font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase;
+    background: var(--black); color: white;
+    border: none; border-radius: 2px; cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-next:hover { background: #333; }
+  .btn-next:active { transform: scale(0.97); }
+  .btn-next:disabled { background: #ccc; cursor: default; }
+
+  /* BALLOONS-ONLY instructions */
+  .instructions-row {
+    background: #f8f8f8; border: 1px solid var(--gray-border);
+    padding: 10px 14px; margin-bottom: 10px;
+    font-size: 13px; line-height: 1.5; color: var(--gray-dark);
+    border-radius: 1px;
+  }
+
+  /* BETWEEN */
+  .between-screen { text-align: center; padding: 20px 0; }
+  .between-screen h2 { font-size: 20px; margin-bottom: 8px; }
+  .big-time { font-family: var(--font-mono); font-size: 52px; font-weight: bold; margin: 16px 0 8px; }
+  .between-stats { font-family: var(--font-mono); font-size: 13px; color: var(--gray-mid); margin-bottom: 16px; line-height: 1.8; }
+  .between-screen p { color: var(--gray-dark); font-size: 14px; line-height: 1.6; margin-bottom: 20px; max-width: 520px; margin-left: auto; margin-right: auto; }
+
+  /* RESULTS */
+  .results-header { text-align: center; margin-bottom: 28px; padding-bottom: 18px; border-bottom: 1px solid var(--gray-border); }
+  .results-header h2 { font-size: 22px; margin-bottom: 6px; }
+  .results-header p { color: var(--gray-mid); font-family: var(--font-mono); font-size: 13px; }
+
+  .results-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 28px; }
+  .result-card { border: 1px solid var(--gray-border); padding: 18px 14px; text-align: center; border-radius: 2px; }
+  .result-card.highlight { border-color: var(--error); background: #fff8f8; }
+  .rc-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-mid); margin-bottom: 10px; }
+  .rc-time { font-family: var(--font-mono); font-size: 26px; font-weight: bold; line-height: 1; margin-bottom: 6px; }
+  .result-card.highlight .rc-time { color: var(--error); }
+  .rc-detail { font-family: var(--font-mono); font-size: 11px; color: var(--gray-mid); line-height: 1.6; }
+
+  /* CHART */
+  .chart-section { margin-bottom: 24px; }
+  .chart-title { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-mid); margin-bottom: 12px; }
+  .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar-row-label { font-size: 12px; width: 120px; flex-shrink: 0; text-align: right; color: var(--gray-dark); }
+  .bar-outer { flex: 1; height: 30px; background: #f0f0f0; border-radius: 1px; overflow: hidden; }
+  .bar-inner { height: 100%; display: flex; align-items: center; padding-right: 10px; font-family: var(--font-mono); font-size: 11px; font-weight: bold; color: white; transition: width 1s cubic-bezier(0.22,1,0.36,1); width: 0%; justify-content: flex-end; padding: 0 8px; }
+  .bar-1 { background: #3a6b3a; }
+  .bar-2 { background: #3a3a6b; }
+  .bar-3 { background: #b83232; }
+
+  /* INSIGHT */
+  .insight-box { background: #f8f8f8; border: 1px solid var(--gray-border); border-right: 3px solid var(--black); padding: 18px 20px; margin-bottom: 24px; }
+  .insight-box h3 { font-size: 15px; margin-bottom: 10px; }
+  .insight-box p { font-size: 14px; line-height: 1.7; color: var(--gray-dark); margin-bottom: 6px; }
+  .insight-box p:last-child { margin-bottom: 0; }
+
+  /* MULTIPLIER */
+  .multiplier-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 24px; padding: 16px; border: 1px dashed var(--gray-light); }
+  .multiplier-num { font-family: var(--font-mono); font-size: 40px; font-weight: bold; color: var(--error); }
+  .multiplier-label { font-size: 14px; color: var(--gray-dark); line-height: 1.6; }
+
+  /* BUTTONS */
+  .btn { display: inline-block; padding: 12px 28px; font-family: var(--font-mono); font-size: 13px; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border-radius: 2px; border: none; transition: background 0.15s, transform 0.1s; }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--black); color: white; }
+  .btn-primary:hover { background: #333; }
+  .btn-secondary { background: transparent; color: var(--black); border: 1.5px solid var(--black); }
+  .btn-secondary:hover { background: #f0f0f0; }
+  .btn-row { display: flex; gap: 12px; justify-content: center; margin-top: 16px; }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  @media(max-width:600px){
+    .card { padding: 18px 14px; }
+    .results-grid { grid-template-columns: 1fr; }
+    .balloon-arena { height: 220px; }
+    .sentence-text { font-size: 16px; }
+  }
+</style>
+</head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EZ4EEMW6C2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EZ4EEMW6C2');
+</script>
+<body>
+
+<header class="lab-header">
+  <div>
+    <div class="lab-subtitle">ניסוי קוגניטיבי · מס׳ 05</div>
+    <div class="lab-title">מולטי-טאסקינג — אשליה או מציאות?</div>
+  </div>
+  <div style="font-family:monospace;font-size:11px;color:#9b9b9b;">Cognitive Load Lab</div>
+</header>
+
+<!-- ══════ TOUCH DETECTION ══════ -->
+<div id="screen-touch" class="card screen active">
+  <div class="intro-section" style="text-align:center; padding: 20px 0;">
+    <h2 style="margin-bottom:16px;">שאלה קצרה לפני שמתחילים</h2>
+    <p style="margin-bottom:28px; max-width:480px; margin-left:auto; margin-right:auto;">
+      הניסוי כולל פיצוץ בלונים. כדי לכוונן את הגודל שלהם —<br>באיזה מכשיר אתם משתמשים עכשיו?
+    </p>
+    <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+      <button class="btn btn-primary" style="font-size:15px; padding:16px 32px;" onclick="setMode('touch')">
+        📱 מסך מגע<br><span style="font-size:11px; font-weight:normal; opacity:0.7;">(טאבלט / סמארטפון)</span>
+      </button>
+      <button class="btn btn-secondary" style="font-size:15px; padding:16px 32px;" onclick="setMode('mouse')">
+        🖱️ עכבר<br><span style="font-size:11px; font-weight:normal; opacity:0.7;">(מחשב נייד / שולחני)</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ INTRO ══════ -->
+<div id="screen-intro" class="card screen">
+  <div class="intro-section">
+    <h2>ברוכים הבאים לניסוי</h2>
+    <p>האם אנחנו יכולים לבצע שתי משימות בו-זמנית? הניסוי הזה יבדוק זאת באמצעות שתי משימות פשוטות: פיצוץ בלונים וקריאת משפטים.</p>
+  </div>
+  <div class="intro-section">
+    <h2>שלושת התנאים</h2>
+    <ul class="task-list">
+      <li><span class="task-num">01</span><div><strong>בלונים בלבד</strong> — בלונים יורדים בצבעים שונים. פוצצו רק את <strong style="color:#3a7a3a">הירוקים</strong>! ניקוד: +5 עד +1 לפי גובה (גבוה יותר = יותר נקודות), −2 לשגוי, −1 לפספוס.</div></li>
+      <li><span class="task-num">02</span><div><strong>קריאה בלבד</strong> — קראו 10 משפטים. לחצו "המשך" כשסיימתם כל משפט. מדידה: זמן ממוצע לקריאת משפט.</div></li>
+      <li><span class="task-num">03</span><div><strong>שניהם יחד</strong> — בלונים יורדים בזמן שאתם קוראים. פוצצו רק ירוקים וגם קראו והמשיכו. מדידה: ניקוד + קצב קריאה.</div></li>
+    </ul>
+    <div class="note-box">⏱ הטיימר מתחיל אוטומטית. בסוף הניסוי תוצג השוואה בין שלושת התנאים.</div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="startTrial(0)">התחל ניסוי ←</button>
+  </div>
+</div>
+
+<!-- ══════ TRIAL ══════ -->
+<div id="screen-trial" class="card screen">
+  <div class="trial-header">
+    <div>
+      <div class="trial-label" id="trial-label">משימה 01 / 03</div>
+      <div class="trial-title" id="trial-title">בלונים בלבד</div>
+    </div>
+    <div class="timer-block">
+      <div class="timer-label">זמן</div>
+      <div class="timer-display" id="timer-display">00.0</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-item" id="stat-popped-row">
+      <span>✅ ירוקים:</span><span class="stat-val popped" id="stat-popped">0</span>
+    </div>
+    <div class="stat-item" id="stat-wrong-row">
+      <span>❌ שגויים:</span><span class="stat-val missed" id="stat-wrong">0</span>
+    </div>
+    <div class="stat-item" id="stat-missed-row">
+      <span>💨 פוספסו:</span><span class="stat-val missed" id="stat-missed">0</span>
+    </div>
+    <div class="stat-item" id="stat-sentences-row" style="display:none">
+      <span>משפטים:</span><span class="stat-val" id="stat-sentences">0 / 10</span>
+    </div>
+  </div>
+
+  <!-- green balloon reminder -->
+  <div id="green-reminder" style="background:#e8f5e9; border:1px solid #5cb85c; border-radius:2px; padding:8px 14px; margin-bottom:10px; font-size:13px; color:#2e7d32; display:none;">
+    🟢 פוצצו רק בלונים <strong>ירוקים</strong> · +5 עד +1 לפי גובה (גבוה = יותר נקודות) · −2 לשגוי · −1 לפספוס
+  </div>
+
+  <div class="instructions-row" id="trial-instructions"></div>
+
+  <!-- BALLOON ARENA (hidden in reading-only) -->
+  <div class="balloon-arena" id="balloon-arena">
+    <div class="arena-line"></div>
+  </div>
+
+  <!-- SENTENCE AREA (hidden in balloons-only) -->
+  <div class="sentence-area" id="sentence-area" style="display:none">
+    <div class="sentence-counter" id="sentence-counter">משפט 1 מתוך 10</div>
+    <div class="sentence-text" id="sentence-text"></div>
+    <button class="btn-next" id="btn-next" onclick="nextSentence()">קראתי — המשך ←</button>
+  </div>
+</div>
+
+<!-- ══════ BETWEEN ══════ -->
+<div id="screen-between" class="card screen">
+  <div class="between-screen">
+    <div class="trial-label" id="between-label">משימה 01 הסתיימה</div>
+    <h2 id="between-title">בלונים — הושלם!</h2>
+    <div class="big-time" id="between-time">0.0s</div>
+    <div class="between-stats" id="between-stats"></div>
+    <p id="between-desc"></p>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="between-btn" onclick="goNext()">המשך ←</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ RESULTS ══════ -->
+<div id="screen-results" class="card screen">
+  <div class="results-header">
+    <h2>תוצאות הניסוי</h2>
+    <p>EXPERIMENT COMPLETE · RESULTS SUMMARY</p>
+  </div>
+
+  <div class="results-grid">
+    <div class="result-card">
+      <div class="rc-label">01 · בלונים בלבד</div>
+      <div class="rc-time" id="res-time-0">—</div>
+      <div class="rc-detail" id="res-detail-0"></div>
+    </div>
+    <div class="result-card">
+      <div class="rc-label">02 · קריאה בלבד</div>
+      <div class="rc-time" id="res-time-1">—</div>
+      <div class="rc-detail" id="res-detail-1"></div>
+    </div>
+    <div class="result-card highlight">
+      <div class="rc-label">03 · שניהם יחד</div>
+      <div class="rc-time" id="res-time-2">—</div>
+      <div class="rc-detail" id="res-detail-2"></div>
+    </div>
+  </div>
+
+  <div class="multiplier-row">
+    <div class="multiplier-num" id="mult-val">×?</div>
+    <div class="multiplier-label" id="mult-desc">זמן קריאת משפט התארך בתנאי המשולב</div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-title">זמן ממוצע לקריאת משפט (שניות)</div>
+    <div class="bar-chart">
+      <div class="bar-row">
+        <div class="bar-row-label">02 · קריאה בלבד</div>
+        <div class="bar-outer"><div class="bar-inner bar-2" id="bar-read-alone"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-row-label">03 · קריאה + בלונים</div>
+        <div class="bar-outer"><div class="bar-inner bar-3" id="bar-read-dual"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-title">ניקוד בלונים: בלבד מול משולב</div>
+    <div class="bar-chart">
+      <div class="bar-row">
+        <div class="bar-row-label">01 · בלונים בלבד</div>
+        <div class="bar-outer"><div class="bar-inner bar-1" id="bar-score-alone"></div></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-row-label">03 · בלונים + קריאה</div>
+        <div class="bar-outer"><div class="bar-inner bar-3" id="bar-score-dual"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <h3>מה קרה כאן?</h3>
+    <p>קריאת משפט ופיצוץ בלונים הן שתי משימות שנראות שונות לחלוטין — האחת קוגניטיבית, השנייה מוטורית. באופן אינטואיטיבי, היינו מצפים שאפשר לבצע אותן בו-זמנית.</p>
+    <p>אבל המוח מנהל <strong>ערוץ קשב אחד</strong>. כשניסיתם לבצע את שתיהן, הוא לא עשה אותן ביחד — הוא <strong>החליף ביניהן</strong> שוב ושוב. כל מעבר עולה זמן, גורם לפספוסים, ומאט את הקריאה.</p>
+    <p>זה בדיוק <strong>Task Switching Cost</strong> — עלות ההחלפה בין משימות. זו הסיבה שמולטי-טאסקינג הוא אשליה.</p>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="resetAll()">שחק שוב</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  TOUCH / MOUSE MODE
+// ══════════════════════════════════════════════════════════
+let BALLOON_H = 62;  // updated by setMode
+
+function setMode(mode) {
+  if (mode === 'mouse') {
+    document.body.classList.add('mouse-mode');
+    BALLOON_H = 88;
+  } else {
+    document.body.classList.remove('mouse-mode');
+    BALLOON_H = 62;
+  }
+  showScreen('screen-intro');
+}
+
+// ══════════════════════════════════════════════════════════
+//  CONSTANTS
+// ══════════════════════════════════════════════════════════
+const SENTENCES = [
+  "הילדים שיחקו בגינה הגדולה עד שהחשיך, ואז נכנסו הביתה רעבים ועייפים מהיום.",
+  "הרכבת הגיעה לתחנה בדיוק בזמן שנקבע, אבל רוב הנוסעים כבר ויתרו וחזרו לבתיהם.",
+  "היא הכינה קפה חם, פתחה את החלון לאוויר הצח, וישבה לקרוא בשקט.",
+  "הכלב רץ לאורך החוף, קפץ לתוך הגלים, ושב רטוב ומאושר אל בעליו.",
+  "הוא קרא ספר שלם במשך יום אחד, ולא הרגיש כיצד עברו השעות מהר כל כך.",
+  "המורה כתבה על הלוח שאלה מסובכת, וחיכתה בסבלנות שמישהו ירים את ידו.",
+  "הסופה הפתיעה את כולם ביום שנראה שקט ובהיר לחלוטין בשעות הבוקר.",
+  "הם הלכו לשוק, רכשו ירקות טריים ותבלינים, והכינו ארוחת ערב ביחד.",
+  "השמש שקעה לאט מאחורי ההרים, וצבעה את השמים בגוונים של כתום וסגול.",
+  "הוא שכח את המפתחות בפנים, ונאלץ לחכות שעה שלמה מחוץ לדלת הבית."
+];
+
+const BALLOON_COLORS_DISTRACT = [
+  { body: '#e84040', knot: '#b83232', isTarget: false },
+  { body: '#4a90d9', knot: '#2a6aa9', isTarget: false },
+  { body: '#f5a623', knot: '#c07a00', isTarget: false },
+  { body: '#9b59b6', knot: '#6c3483', isTarget: false },
+  { body: '#e91e8c', knot: '#a0125e', isTarget: false },
+  { body: '#00bcd4', knot: '#007a8c', isTarget: false },
+];
+const BALLOON_COLOR_TARGET = { body: '#5cb85c', knot: '#3a7a3a', isTarget: true };
+
+// ~35% chance of green balloon
+function randomBalloonColor() {
+  return Math.random() < 0.35
+    ? BALLOON_COLOR_TARGET
+    : BALLOON_COLORS_DISTRACT[Math.floor(Math.random() * BALLOON_COLORS_DISTRACT.length)];
+}
+
+const BALLOON_FALL_MS_TOUCH = 5000;
+const BALLOON_FALL_MS_MOUSE = 7000;
+const BALLOON_INTERVAL  = 2500;
+const ARENA_HEIGHT      = 300;
+const GREEN_GUARANTEE_MS = 2000;  // guarantee green if none in last 2s
+
+let lastGreenTime = 0;  // timestamp of last green balloon spawned
+
+function guaranteedGreenColor() {
+  // force green if 2s have passed since last green
+  if (Date.now() - lastGreenTime > GREEN_GUARANTEE_MS) {
+    lastGreenTime = Date.now();
+    return BALLOON_COLOR_TARGET;
+  }
+  const color = Math.random() < 0.40
+    ? BALLOON_COLOR_TARGET
+    : BALLOON_COLORS_DISTRACT[Math.floor(Math.random() * BALLOON_COLORS_DISTRACT.length)];
+  if (color.isTarget) lastGreenTime = Date.now();
+  return color;
+}
+
+// ══════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════
+let currentTrial = 0;
+let timerStart   = 0;
+let timerInterval = null;
+let balloonInterval = null;
+let balloonTimers   = [];   // per-balloon fall timers
+let activeBalloons  = {};   // id → {el, timeoutId}
+let balloonIdCounter = 0;
+
+let poppedCount  = 0;   // correct pops (green)
+let wrongCount   = 0;   // wrong pops (non-green)
+let missedCount  = 0;   // missed green balloons
+let score        = 0;   // running score
+let sentenceIdx  = 0;
+let sentenceTimes = [];  // ms per sentence
+let sentenceStart = 0;
+
+// results store
+let results = [
+  { time:0, popped:0, wrong:0, missed:0, score:0, avgSentenceMs:0 },
+  { time:0, popped:0, wrong:0, missed:0, score:0, avgSentenceMs:0 },
+  { time:0, popped:0, wrong:0, missed:0, score:0, avgSentenceMs:0 },
+];
+
+// ══════════════════════════════════════════════════════════
+//  TIMER
+// ══════════════════════════════════════════════════════════
+function startTimer() {
+  timerStart = Date.now();
+  timerInterval = setInterval(() => {
+    document.getElementById('timer-display').textContent =
+      ((Date.now() - timerStart) / 1000).toFixed(1);
+  }, 100);
+}
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  return (Date.now() - timerStart) / 1000;
+}
+
+// ══════════════════════════════════════════════════════════
+//  BALLOON ENGINE
+// ══════════════════════════════════════════════════════════
+function randomX(arena) {
+  const w = arena.clientWidth || 780;
+  return Math.floor(Math.random() * (w - 70)) + 4;
+}
+
+function spawnBalloon(arena) {
+  const color = guaranteedGreenColor();
+  const id = 'b' + (balloonIdCounter++);
+  const x = randomX(arena);
+  const spawnTime = Date.now();
+  const fallMs = document.body.classList.contains('mouse-mode') ? BALLOON_FALL_MS_MOUSE : BALLOON_FALL_MS_TOUCH;
+
+  const el = document.createElement('div');
+  el.className = 'balloon';
+  el.id = id;
+  el.dataset.isTarget = color.isTarget ? '1' : '0';
+  el.dataset.spawnTime = spawnTime;
+  el.dataset.fallMs = fallMs;
+  el.style.cssText = `left:${x}px; top:-${BALLOON_H}px;`;
+  el.innerHTML = `
+    <div class="balloon-body" style="background:${color.body}; --knot-color:${color.knot}"></div>
+    <div class="balloon-string"></div>`;
+  el.addEventListener('click', () => popBalloon(id, true));
+  arena.appendChild(el);
+
+  // animate fall
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      el.style.transition = `top ${fallMs}ms linear`;
+      el.style.top = (ARENA_HEIGHT - BALLOON_H + 10) + 'px';
+    });
+  });
+
+  const timeout = setTimeout(() => missBallon(id), fallMs);
+  activeBalloons[id] = { el, timeout };
+}
+
+function spawnPair(arena) {
+  spawnBalloon(arena);
+  // second balloon with slight horizontal offset after tiny delay
+  setTimeout(() => spawnBalloon(arena), 300);
+}
+
+function calcHeightScore(el) {
+  const spawnTime  = parseInt(el.dataset.spawnTime);
+  const fallMs     = parseInt(el.dataset.fallMs);
+  const elapsed    = Date.now() - spawnTime;
+  const progress   = Math.min(elapsed / fallMs, 1);  // 0 = top, 1 = bottom
+  // 5 zones: 0–20% = 5pts, 20–40% = 4pts, 40–60% = 3pts, 60–80% = 2pts, 80–100% = 1pt
+  return 5 - Math.floor(progress * 5);
+}
+
+function popBalloon(id, userAction) {
+  const entry = activeBalloons[id];
+  if (!entry) return;
+  clearTimeout(entry.timeout);
+  delete activeBalloons[id];
+
+  const el = entry.el;
+  const isTarget = el.dataset.isTarget === '1';
+
+  if (userAction) {
+    if (isTarget) {
+      const pts = calcHeightScore(el);
+      poppedCount++;
+      score += pts;
+      // show floating score
+      showFloatingScore(el, '+' + pts);
+      el.classList.add('pop');
+      document.getElementById('stat-popped').textContent = poppedCount;
+    } else {
+      wrongCount++;
+      score -= 2;
+      showFloatingScore(el, '−2');
+      el.classList.add('flash-wrong');
+      setTimeout(() => { el.classList.add('pop'); }, 200);
+      document.getElementById('stat-wrong').textContent = wrongCount;
+    }
+  } else {
+    el.classList.add('pop');
+  }
+  setTimeout(() => el.remove(), 400);
+}
+
+function showFloatingScore(el, text) {
+  const arena = document.getElementById('balloon-arena');
+  const rect  = el.getBoundingClientRect();
+  const arenaRect = arena.getBoundingClientRect();
+  const div = document.createElement('div');
+  div.textContent = text;
+  const isPositive = text.startsWith('+');
+  div.style.cssText = `
+    position:absolute;
+    left:${rect.left - arenaRect.left + rect.width/2}px;
+    top:${rect.top - arenaRect.top}px;
+    transform:translateX(-50%);
+    font-family:monospace; font-size:18px; font-weight:bold;
+    color:${isPositive ? '#2d7a3a' : '#b83232'};
+    pointer-events:none; z-index:10;
+    animation: floatUp 0.8s ease forwards;
+  `;
+  arena.appendChild(div);
+  setTimeout(() => div.remove(), 800);
+}
+
+function missBallon(id) {
+  const entry = activeBalloons[id];
+  if (!entry) return;
+  delete activeBalloons[id];
+
+  const el = entry.el;
+  const isTarget = el.dataset.isTarget === '1';
+  el.classList.add('miss');
+  if (isTarget) {
+    missedCount++;
+    score -= 1;
+    document.getElementById('stat-missed').textContent = missedCount;
+  }
+  setTimeout(() => el.remove(), 350);
+}
+
+function startBalloons() {
+  const arena = document.getElementById('balloon-arena');
+  spawnPair(arena);
+  balloonInterval = setInterval(() => spawnPair(arena), BALLOON_INTERVAL);
+}
+
+function stopBalloons() {
+  clearInterval(balloonInterval);
+  balloonInterval = null;
+  // remove all remaining balloons
+  Object.keys(activeBalloons).forEach(id => {
+    clearTimeout(activeBalloons[id].timeout);
+    activeBalloons[id].el.remove();
+  });
+  activeBalloons = {};
+}
+
+// ══════════════════════════════════════════════════════════
+//  SENTENCE ENGINE
+// ══════════════════════════════════════════════════════════
+function showSentence(idx) {
+  document.getElementById('sentence-text').textContent = SENTENCES[idx];
+  document.getElementById('sentence-counter').textContent = `משפט ${idx+1} מתוך ${SENTENCES.length}`;
+  document.getElementById('btn-next').disabled = false;
+  sentenceStart = Date.now();
+}
+
+function nextSentence() {
+  const elapsed = Date.now() - sentenceStart;
+  sentenceTimes.push(elapsed);
+  document.getElementById('btn-next').disabled = true;
+
+  sentenceIdx++;
+  document.getElementById('stat-sentences').textContent = sentenceIdx + ' / 10';
+
+  if (sentenceIdx >= SENTENCES.length) {
+    // reading done — if dual trial, balloons keep going until we stop
+    finishTrial();
+  } else {
+    showSentence(sentenceIdx);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  TRIAL CONTROL
+// ══════════════════════════════════════════════════════════
+function startTrial(idx) {
+  currentTrial = idx;
+  poppedCount  = 0;
+  wrongCount   = 0;
+  missedCount  = 0;
+  score        = 0;
+  lastGreenTime = 0;
+  sentenceIdx  = 0;
+  sentenceTimes = [];
+  balloonIdCounter = 0;
+
+  // reset UI counters
+  document.getElementById('stat-popped').textContent = '0';
+  document.getElementById('stat-wrong').textContent  = '0';
+  document.getElementById('stat-missed').textContent = '0';
+  document.getElementById('stat-sentences').textContent = '0 / 10';
+  document.getElementById('timer-display').textContent = '00.0';
+
+  const arena    = document.getElementById('balloon-arena');
+  const sentArea = document.getElementById('sentence-area');
+  const instrEl  = document.getElementById('trial-instructions');
+  const statSent = document.getElementById('stat-sentences-row');
+  const statPop  = document.getElementById('stat-popped-row');
+  const statMiss = document.getElementById('stat-missed-row');
+
+  // clear arena
+  arena.querySelectorAll('.balloon').forEach(b => b.remove());
+
+  showScreen('screen-trial');
+
+  const greenReminder = document.getElementById('green-reminder');
+
+  if (idx === 0) {
+    // BALLOONS ONLY
+    document.getElementById('trial-label').textContent = 'משימה 01 / 03';
+    document.getElementById('trial-title').textContent = 'בלונים בלבד';
+    instrEl.textContent = 'פוצצו רק את הבלונים הירוקים לפני שמגיעים לתחתית!';
+    arena.style.display = 'block';
+    sentArea.style.display = 'none';
+    statSent.style.display = 'none';
+    statPop.style.display = '';
+    document.getElementById('stat-wrong-row').style.display = '';
+    statMiss.style.display = '';
+    greenReminder.style.display = 'block';
+
+    startTimer();
+    startBalloons();
+
+    // end after fixed number of pairs (10 pairs = 20 balloons)
+    const fallMs = document.body.classList.contains('mouse-mode') ? BALLOON_FALL_MS_MOUSE : BALLOON_FALL_MS_TOUCH;
+    setTimeout(() => finishTrial(), BALLOON_INTERVAL * 10 + fallMs);
+
+  } else if (idx === 1) {
+    // READING ONLY
+    document.getElementById('trial-label').textContent = 'משימה 02 / 03';
+    document.getElementById('trial-title').textContent = 'קריאה בלבד';
+    instrEl.textContent = 'קראו כל משפט בעיון. לחצו "המשך" כשסיימתם לקרוא.';
+    arena.style.display = 'none';
+    sentArea.style.display = 'flex';
+    statSent.style.display = '';
+    statPop.style.display = 'none';
+    document.getElementById('stat-wrong-row').style.display = 'none';
+    statMiss.style.display = 'none';
+    greenReminder.style.display = 'none';
+
+    showSentence(0);
+    startTimer();
+
+  } else {
+    // DUAL
+    document.getElementById('trial-label').textContent = 'משימה 03 / 03';
+    document.getElementById('trial-title').textContent = 'בלונים + קריאה יחד';
+    instrEl.textContent = 'קראו את המשפטים ולחצו "המשך" — וגם פוצצו רק בלונים ירוקים!';
+    arena.style.display = 'block';
+    sentArea.style.display = 'flex';
+    statSent.style.display = '';
+    statPop.style.display = '';
+    document.getElementById('stat-wrong-row').style.display = '';
+    statMiss.style.display = '';
+    greenReminder.style.display = 'block';
+
+    showSentence(0);
+    startTimer();
+    startBalloons();
+  }
+}
+
+function finishTrial() {
+  const elapsed = stopTimer();
+  stopBalloons();
+
+  const avgMs = sentenceTimes.length > 0
+    ? sentenceTimes.reduce((a,b) => a+b, 0) / sentenceTimes.length
+    : 0;
+
+  results[currentTrial] = {
+    time: elapsed,
+    popped: poppedCount,
+    wrong: wrongCount,
+    missed: missedCount,
+    score: score,
+    avgSentenceMs: avgMs
+  };
+
+  setTimeout(() => showBetween(currentTrial, elapsed), 300);
+}
+
+// ══════════════════════════════════════════════════════════
+//  BETWEEN
+// ══════════════════════════════════════════════════════════
+function showBetween(idx, elapsed) {
+  showScreen('screen-between');
+  const r = results[idx];
+
+  document.getElementById('between-label').textContent = 'משימה 0'+(idx+1)+' הסתיימה';
+  document.getElementById('between-time').textContent = elapsed.toFixed(1)+'s';
+
+  if (idx === 0) {
+    document.getElementById('between-title').textContent = 'בלונים — הושלם!';
+    document.getElementById('between-stats').innerHTML =
+      `ניקוד: <strong>${r.score}</strong> &nbsp;|&nbsp; ירוקים: ${r.popped} &nbsp;|&nbsp; שגויים: ${r.wrong} &nbsp;|&nbsp; פוספסו: ${r.missed}`;
+    document.getElementById('between-desc').textContent = 'כעת תקראו 10 משפטים ותלחצו "המשך" אחרי כל אחד.';
+    document.getElementById('between-btn').textContent = 'המשך למשימה 02 ←';
+  } else if (idx === 1) {
+    const avgSec = (r.avgSentenceMs / 1000).toFixed(1);
+    document.getElementById('between-title').textContent = 'קריאה — הושלם!';
+    document.getElementById('between-stats').innerHTML =
+      `זמן ממוצע למשפט: <strong>${avgSec} שניות</strong>`;
+    document.getElementById('between-desc').textContent = 'עכשיו לאתגר האמיתי — בלונים ירוקים וקריאה בו-זמנית.';
+    document.getElementById('between-btn').textContent = 'המשך למשימה 03 ←';
+  } else {
+    const avgSec = (r.avgSentenceMs / 1000).toFixed(1);
+    document.getElementById('between-title').textContent = 'הניסוי הושלם!';
+    document.getElementById('between-stats').innerHTML =
+      `ניקוד: <strong>${r.score}</strong> &nbsp;|&nbsp; ירוקים: ${r.popped} &nbsp;|&nbsp; שגויים: ${r.wrong} &nbsp;|&nbsp; פוספסו: ${r.missed}<br>זמן ממוצע למשפט: <strong>${avgSec} שניות</strong>`;
+    document.getElementById('between-desc').textContent = '';
+    document.getElementById('between-btn').textContent = 'ראה תוצאות ←';
+  }
+}
+
+function goNext() {
+  if (currentTrial < 2) startTrial(currentTrial + 1);
+  else showResults();
+}
+
+// ══════════════════════════════════════════════════════════
+//  RESULTS
+// ══════════════════════════════════════════════════════════
+function showResults() {
+  showScreen('screen-results');
+
+  const r0 = results[0], r1 = results[1], r2 = results[2];
+
+  // card 0 – balloons only
+  document.getElementById('res-time-0').textContent = r0.score + ' נק׳';
+  document.getElementById('res-detail-0').innerHTML =
+    `ירוקים: ${r0.popped} · שגויים: ${r0.wrong} · פוספסו: ${r0.missed}`;
+
+  // card 1 – reading only
+  const avg1 = (r1.avgSentenceMs/1000).toFixed(1);
+  document.getElementById('res-time-1').textContent = avg1+'s';
+  document.getElementById('res-detail-1').innerHTML = `זמן ממוצע למשפט`;
+
+  // card 2 – dual
+  const avg2 = (r2.avgSentenceMs/1000).toFixed(1);
+  document.getElementById('res-time-2').textContent = r2.score + ' נק׳';
+  document.getElementById('res-detail-2').innerHTML =
+    `ירוקים: ${r2.popped} · שגויים: ${r2.wrong} · פוספסו: ${r2.missed}<br>ממוצע משפט: ${avg2}s`;
+
+  // multiplier
+  const ms1 = r1.avgSentenceMs || 1;
+  const ms2 = r2.avgSentenceMs || 1;
+  const mult = (ms2 / ms1).toFixed(2);
+  document.getElementById('mult-val').textContent = '×'+mult;
+  document.getElementById('mult-desc').innerHTML =
+    `קריאת משפט לקחה <strong>${avg1}s</strong> לבד, ו-<strong>${avg2}s</strong> בתנאי המשולב`;
+
+  // charts – reading
+  const maxRead = Math.max(ms1, ms2) * 1.15 / 1000;
+  setTimeout(() => {
+    const b1 = document.getElementById('bar-read-alone');
+    b1.style.width = ((ms1/1000)/maxRead*100).toFixed(1)+'%';
+    b1.textContent = (ms1/1000).toFixed(1)+'s';
+
+    const b2 = document.getElementById('bar-read-dual');
+    b2.style.width = ((ms2/1000)/maxRead*100).toFixed(1)+'%';
+    b2.textContent = (ms2/1000).toFixed(1)+'s';
+
+    // charts – score comparison
+    const maxScore = Math.max(r0.score, r2.score, 1) * 1.2;
+    const s1 = document.getElementById('bar-score-alone');
+    s1.style.width = (Math.max(r0.score,0)/maxScore*100).toFixed(1)+'%';
+    s1.textContent = r0.score + ' נק׳';
+    const s2 = document.getElementById('bar-score-dual');
+    s2.style.width = (Math.max(r2.score,0)/maxScore*100).toFixed(1)+'%';
+    s2.textContent = r2.score + ' נק׳';
+  }, 150);
+}
+
+// ══════════════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function resetAll() {
+  stopBalloons();
+  stopTimer();
+  results = [
+    {time:0,popped:0,wrong:0,missed:0,score:0,avgSentenceMs:0},
+    {time:0,popped:0,wrong:0,missed:0,score:0,avgSentenceMs:0},
+    {time:0,popped:0,wrong:0,missed:0,score:0,avgSentenceMs:0}
+  ];
+  ['bar-read-alone','bar-read-dual','bar-score-alone','bar-score-dual'].forEach(id => {
+    const b = document.getElementById(id);
+    if(b){b.style.width='0%';b.textContent='';}
+  });
+  showScreen('screen-touch');
+}
+</script>
+</body>
+</html>

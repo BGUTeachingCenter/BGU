@@ -1,0 +1,259 @@
+code
+Html
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מבוך ההיסקים הסילוגיסטיים</title>
+    <!-- Include D3.js and the venn.js library from a CDN -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/venn.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            line-height: 1.6;
+        }
+        #game-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 700px;
+            padding: 24px;
+            text-align: center;
+        }
+        h1 {
+            color: #0d3b66;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+        }
+        #premises-container {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-size: 1.2em;
+        }
+        .premise {
+            margin-bottom: 10px;
+        }
+        #options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .option-btn {
+            background-color: #faf0e6;
+            color: #333;
+            border: 2px solid #d3c0b3;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            width: 100%;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #eaddd7;
+            transform: translateY(-2px);
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        #feedback-container {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 8px;
+            display: none; /* Hidden by default */
+        }
+        .feedback-text {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        #venn-diagram {
+            margin: 0 auto;
+        }
+        .control-button {
+            margin-top: 20px;
+            background-color: #0d3b66;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none; /* Hidden initially */
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1 id="stage-title">מבוך ההיסקים הסילוגיסטיים</h1>
+    <div id="premises-container"></div>
+    <div id="options-container"></div>
+    <div id="feedback-container">
+        <div class="feedback-text"></div>
+        <div id="venn-diagram"></div>
+    </div>
+    <button id="continue-button" class="control-button">המשך לשלב הבא</button>
+    <button id="restart-button" class="control-button" onclick="init()">חזור לתפריט הראשי</button>
+</div>
+
+<script>
+    // --- מבנה הנתונים המורחב ---
+    const mazeData = {
+        medium: [
+            // stages for medium path
+            { id: 1, title: 'שלב 1 (בינוני)', premises: ['הנחה א\': כל הפילוסופים הם הוגים ביקורתיים.', 'הנחה ב\': אף הוגה ביקורתי אינו דוגמטי.'], options: [{ text: 'מסקנה: לכן, חלק מההוגים הביקורתיים אינם פילוסופים.', isCorrect: false, feedback: 'לא נכון. ייתכן שכל ההוגים הביקורתיים הם פילוסופים.' },{ text: 'מסקנה: לכן, אף פילוסוף אינו דוגמטי.', isCorrect: true, nextStage: 2 },{ text: 'מסקנה: לכן, כל ההוגים הדוגמטיים אינם פילוסופים.', isCorrect: false, feedback: 'לא נכון. זו מסקנה קרובה אך לא מדויקת.' }], vennData: [{ sets: ['הוגים ביקורתיים'], size: 12 }, { sets: ['דוגמטיים'], size: 12 }, { sets: ['פילוסופים'], size: 4 }, { sets: ['הוגים ביקורתיים', 'פילוסופים'], size: 4 }] },
+            { id: 2, title: 'שלב 2 (בינוני)', premises: ['הנחה א\': כל האקזיסטנציאליסטים עוסקים בשאלת החירות.', 'הנחה ב\': חלק מהפילוסופים הם אקזיסטנציאליסטים.'], options: [{ text: 'מסקנה: לכן, כל הפילוסופים עוסקים בשאלת החירות.', isCorrect: false, feedback: 'לא נכון. זוהי הכללת יתר.' },{ text: 'מסקנה: לכן, כל העוסקים בשאלת החירות הם פילוסופים.', isCorrect: false, feedback: 'לא נכון. זוהי טעות לוגית של היפוך.' },{ text: 'מסקנה: לכן, חלק מהפילוסופים עוסקים בשאלת החירות.', isCorrect: true, nextStage: 3 }], vennData: [{ sets: ['עוסקים בחירות'], size: 12 }, { sets: ['פילוסופים'], size: 8 }, { sets: ['אקזיסטנציאליסטים'], size: 4 }, { sets: ['עוסקים בחירות', 'אקזיסטנציאליסטים'], size: 4 }, { sets: ['פילוסופים', 'אקזיסטנציאליסטים'], size: 2 }] },
+            { id: 3, title: 'שלב 3 (בינוני)', premises: ['הנחה א\': כל התועלתנים שואפים למקסם אושר.', 'הנחה ב\': חלק מהפוליטיקאים אינם תועלתנים.'], options: [{ text: 'מסקנה: לכן, חלק מהפוליטיקאים אינם שואפים למקסם אושר.', isCorrect: true, nextStage: 4 },{ text: 'מסקנה: לכן, אף פוליטיקאי אינו שואף למקסם אושר.', isCorrect: false, feedback: 'לא נכון. אנחנו יודעים רק על חלק מהפוליטיקאים.' },{ text: 'מסקנה: לכן, לא ניתן להסיק מסקנה הכרחית.', isCorrect: false, feedback: 'לא נכון. ניתן להסיק מסקנה תקפה מהנחות אלו.' }], vennData: [{ sets: ['שואפים לאושר'], size: 12 }, { sets: ['פוליטיקאים'], size: 8 }, { sets: ['תועלתנים'], size: 4 }, { sets: ['שואפים לאושר', 'תועלתנים'], size: 4 }] },
+            { id: 4, title: 'שלב 4 (בינוני)', premises: ['הנחה א\': אף מדען אינו מאמין במאגיה.', 'הנחה ב\': כל האלכימאים מאמינים במאגיה.'], options: [{ text: 'מסקנה: לכן, חלק מהמדענים הם אלכימאים.', isCorrect: false, feedback: 'לא נכון. ההנחות מציבות את שתי הקבוצות כנפרדות לחלוטין.' },{ text: 'מסקנה: לכן, אף אלכימאי אינו מדען.', isCorrect: true, nextStage: 5 },{ text: 'מסקנה: לכן, חלק מהמאמינים במאגיה אינם מדענים.', isCorrect: false, feedback: 'זו מסקנה נכונה, אך ישנה מסקנה חזקה וישירה יותר שניתן להסיק.' }], vennData: [{ sets: ['מדענים'], size: 12 }, { sets: ['מאמינים במאגיה'], size: 12 }, { sets: ['אלכימאים'], size: 4 }, { sets: ['מאמינים במאגיה', 'אלכימאים'], size: 4 }] },
+            { id: 5, title: 'שלב 5 (בינוני)', premises: ['הנחה א\': אם הטיעון תקף, אז המסקנה נובעת מההנחות.', 'הנחה ב\': הטיעון תקף.'], options: [{ text: 'מסקנה: לכן, ההנחות נכונות.', isCorrect: false, feedback: 'לא נכון. תקפות לוגית עוסקת במבנה, לא בנכונות התוכן של ההנחות.' },{ text: 'מסקנה: לכן, המסקנה נכונה.', isCorrect: false, feedback: 'כמעט. המסקנה *נובעת* מההנחות, אך היא תהיה נכונה רק אם גם ההנחות עצמן נכונות.' },{ text: 'מסקנה: לכן, המסקנה נובעת מההנחות.', isCorrect: true, nextStage: 'end' }] }
+        ],
+        advanced: [
+            // stages for advanced path
+            { id: 1, title: 'שלב 1 (מתקדם)', premises: ['הנחה א\': חלק מהסטואיקנים הם הוגים רומיים.', 'הנחה ב\': כל הסטואיקנים מאמינים בשליטה עצמית.'], options: [{ text: 'מסקנה: לכן, כל ההוגים הרומיים מאמינים בשליטה עצמית.', isCorrect: false, feedback: 'לא נכון. אנו יודעים רק על חלק מההוגים הרומיים (אלה שהם סטואיקנים).' },{ text: 'מסקנה: לכן, חלק מהמאמינים בשליטה עצמית הם הוגים רומיים.', isCorrect: true, nextStage: 2 },{ text: 'מסקנה: לכן, אף הוגה רומי אינו מאמין בשליטה עצמית.', isCorrect: false, feedback: 'לא נכון. ההנחות דווקא מראות שיש חפיפה בין הקבוצות.' }], vennData: [{ sets: ['מאמינים בשליטה עצמית'], size: 12 }, { sets: ['הוגים רומיים'], size: 8 }, { sets: ['סטואיקנים'], size: 4 }, { sets: ['מאמינים בשליטה עצמית', 'סטואיקנים'], size: 4 }, { sets: ['הוגים רומיים', 'סטואיקנים'], size: 2 }] },
+            { id: 2, title: 'שלב 2 (מתקדם)', premises: ['הנחה א\': אם יורד גשם, אז המדרכה רטובה.', 'הנחה ב\': המדרכה אינה רטובה.'], options: [{ text: 'מסקנה: לכן, לא יורד גשם.', isCorrect: true, nextStage: 3 },{ text: 'מסקנה: לכן, יורד גשם.', isCorrect: false, feedback: 'לא נכון. זוהי בדיוק המסקנה שההנחות שוללות.' },{ text: 'מסקנה: לכן, יכול להיות שיורד גשם.', isCorrect: false, feedback: 'לא נכון. זהו היסק לוגי הכרחי (Modus Tollens).' }] },
+            { id: 3, title: 'שלב 3 (מתקדם)', premises: ['הנחה א\': או שאפלטון צודק או שאריסטו צודק (אבל לא שניהם).', 'הנחה ב\': התברר שאפלטון אינו צודק.'], options: [{ text: 'מסקנה: לכן, לא ניתן לדעת אם אריסטו צודק.', isCorrect: false, feedback: 'לא נכון. בהינתן ההנחה הראשונה, שלילת אפשרות אחת מחייבת את קיומה של השנייה.' },{ text: 'מסקנה: לכן, אריסטו צודק.', isCorrect: true, nextStage: 4 },{ text: 'מסקנה: לכן, גם אריסטו אינו צודק.', isCorrect: false, feedback: 'לא נכון. זה סותר את ההנחה הראשונה.' }] },
+            { id: 4, title: 'שלב 4 (מתקדם)', premises: ['הנחה א\': אף פילוסוף אינו בור.', 'הנחה ב\': חלק מהאנשים החכמים הם בורים.'], options: [{ text: 'מסקנה: לכן, חלק מהאנשים החכמים אינם פילוסופים.', isCorrect: true, nextStage: 5 },{ text: 'מסקנה: לכן, אף אדם חכם אינו פילוסוף.', isCorrect: false, feedback: 'לא נכון. אנחנו יכולים להסיק רק לגבי חלק מהאנשים החכמים (אלה שהם בורים).' },{ text: 'מסקנה: לכן, כל הפילוסופים הם אנשים חכמים.', isCorrect: false, feedback: 'לא נכון. ההנחות לא מספקות מידע על כלל האנשים החכמים.' }], vennData: [{ sets: ['פילוסופים'], size: 8 }, { sets: ['בורים'], size: 8 }, { sets: ['אנשים חכמים'], size: 12 }, { sets: ['אנשים חכמים', 'בורים'], size: 2 }] },
+            { id: 5, title: 'שלב 5 (מתקדם)', premises: ['הנחה א\': כל הפוסטמודרניסטים מטילים ספק בנרטיבים גדולים.', 'הנחה ב\': חלק מהסוציולוגים הם פוסטמודרניסטים.', 'הנחה ג\': דני הוא סוציולוג, אך אינו פוסטמודרניסט.'], options: [{ text: 'מסקנה: לכן, דני בהכרח לא מטיל ספק בנרטיבים גדולים.', isCorrect: false, feedback: 'לא נכון. אנחנו לא יודעים כלום על דעותיו של דני, רק שהוא לא פוסטמודרניסט. ייתכן שהוא מטיל ספק מסיבות אחרות.' },{ text: 'מסקנה: לכן, כל הסוציולוגים מטילים ספק בנרטיבים גדולים.', isCorrect: false, feedback: 'לא נכון. אנו יודעים זאת רק על חלק מהסוציולוגים.' },{ text: 'מסקנה: לכן, חלק מהסוציולוגים מטילים ספק בנרטיבים גדולים.', isCorrect: true, nextStage: 'end' }], vennData: [{ sets: ['מטילים ספק'], size: 12 }, { sets: ['סוציולוגים'], size: 8 }, { sets: ['פוסטמודרניסטים'], size: 4 }, { sets: ['מטילים ספק', 'פוסטמודרניסטים'], size: 4 }, { sets: ['סוציולוגים', 'פוסטמודרניסטים'], size: 2 }] }
+        ],
+        // Special stages
+        start: { id: 'start', title: 'ברוכים הבאים למבוך!', premises: ['בסימולציה זו, תצטרכו לנווט במבוך של טיעונים לוגיים.', 'בכל שלב, יוצגו בפניכם הנחות יסוד. עליכם לבחור במסקנה היחידה הנובעת מהן באופן הכרחי.', 'בחירה נכונה תקדם אתכם, בחירה שגויה תשאיר אתכם במקום עם הסבר.'], options: [{ text: 'הבנתי, בואו נתחיל!', isCorrect: true, nextStage: 'choosePath' }] },
+        choosePath: { id: 'choosePath', title: 'בחירת מסלול', premises: ['אנא בחר/י את רמת הקושי של המבוך:'], options: [] },
+        end: { id: 'end', title: 'כל הכבוד!', premises: ['הגעתם לסוף המבוך!', 'הדגמתם חשיבה לוגית חדה ויכולת להסיק מסקנות תקפות. סימולציה זו ממחישה כיצד ניתן להשתמש בכלים אינטראקטיביים כדי לתרגל ולחדד מיומנויות חשיבה מורכבות.'], options: [] }
+    };
+
+    // --- לוגיקת המשחק (ה"מנוע") ---
+    let currentPath = null;
+    let currentStageId = 'start';
+    
+    // UI Elements
+    const titleEl = document.getElementById('stage-title');
+    const premisesEl = document.getElementById('premises-container');
+    const optionsEl = document.getElementById('options-container');
+    const feedbackEl = document.getElementById('feedback-container');
+    const feedbackTextEl = feedbackEl.querySelector('.feedback-text');
+    const vennEl = document.getElementById('venn-diagram');
+    const continueBtn = document.getElementById('continue-button');
+    const restartBtn = document.getElementById('restart-button');
+
+    function drawVenn(vennData) {
+        vennEl.innerHTML = '';
+        if (!vennData) return;
+        try {
+            const chart = venn.VennDiagram().width(350).height(300);
+            d3.select("#venn-diagram").datum(vennData).call(chart);
+            d3.selectAll("#venn-diagram .venn-circle path").style("fill-opacity", 0.5).style("stroke-width", 2).style("stroke", "#333");
+            d3.selectAll("#venn-diagram text").style("font-family", "Arial, sans-serif").style("font-size", "14px").style("fill", "#000");
+        } catch (e) {
+            console.error("Venn diagram error:", e);
+        }
+    }
+    
+    function choosePath(path) {
+        currentPath = path;
+        currentStageId = 1;
+        renderStage(1);
+    }
+
+    function handleOptionClick(option) {
+        const stage = (currentPath ? mazeData[currentPath] : [mazeData.start, mazeData.choosePath, mazeData.end]).find(s => s.id === currentStageId);
+        
+        feedbackEl.style.display = 'block';
+        document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+
+        if (option.isCorrect) {
+            feedbackTextEl.textContent = 'נכון מאוד!';
+            feedbackTextEl.style.color = '#1e8e3e';
+            drawVenn(stage.vennData);
+            
+            continueBtn.style.display = 'block';
+            continueBtn.onclick = () => {
+                currentStageId = option.nextStage;
+                renderStage(currentStageId);
+            };
+        } else {
+            feedbackTextEl.textContent = option.feedback;
+            feedbackTextEl.style.color = '#d93025';
+            drawVenn(stage.vennData);
+            
+            setTimeout(() => {
+                document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = false);
+                feedbackEl.style.display = 'none';
+            }, 4000);
+        }
+    }
+
+    function renderStage(stageId) {
+        let stage;
+        if (stageId === 'start' || stageId === 'choosePath' || stageId === 'end') {
+             stage = mazeData[stageId];
+        } else {
+             stage = mazeData[currentPath].find(s => s.id === stageId);
+        }
+        
+        if (!stage) return;
+
+        feedbackEl.style.display = 'none';
+        continueBtn.style.display = 'none';
+        
+        titleEl.textContent = stage.title;
+        premisesEl.innerHTML = '';
+        stage.premises.forEach(p => {
+            const pElement = document.createElement('div');
+            pElement.className = 'premise';
+            pElement.textContent = p;
+            premisesEl.appendChild(pElement);
+        });
+
+        optionsEl.innerHTML = '';
+        
+        if (stage.id === 'choosePath') {
+             const mediumBtn = document.createElement('button');
+             mediumBtn.className = 'option-btn';
+             mediumBtn.textContent = 'מסלול בינוני';
+             mediumBtn.onclick = () => choosePath('medium');
+             optionsEl.appendChild(mediumBtn);
+             
+             const advancedBtn = document.createElement('button');
+             advancedBtn.className = 'option-btn';
+             advancedBtn.textContent = 'מסלול מתקדם';
+             advancedBtn.onclick = () => choosePath('advanced');
+             optionsEl.appendChild(advancedBtn);
+        } else {
+            stage.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = option.text;
+                button.onclick = () => handleOptionClick(option);
+                optionsEl.appendChild(button);
+            });
+        }
+        
+        restartBtn.style.display = (stage.id === 'end') ? 'block' : 'none';
+    }
+    
+    function init() {
+        currentPath = null;
+        currentStageId = 'start';
+        renderStage('start');
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+
+</script>
+
+</body>
+</html>

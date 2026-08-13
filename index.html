@@ -16,17 +16,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
 
-  <title>בינה מלאכותית בהוראה - אוניברסיטת בן גוריון בנגב</title>
+  <title>היחידה לקידום איכות ההוראה והלמידה - אוניברסיטת בן גוריון בנגב</title>
 
-  <meta property="og:title" content="בינה מלאכותית בהוראה - אוניברסיטת בן גוריון בנגב">
-  <meta property="og:description" content="אוסף משחקים, סימולציות ובוטים מבוססי בינה מלאכותית מבית היחידה לקידום איכות ההוראה והלמידה, אוניברסיטת בן גוריון בנגב.">
+  <meta property="og:title" content="היחידה לקידום איכות ההוראה והלמידה - אוניברסיטת בן גוריון בנגב">
+  <meta property="og:description" content="בוטים, בדיקת תרגילים, ספרי קורס וסימולציות מבית היחידה לקידום איכות ההוראה והלמידה, אוניברסיטת בן גוריון בנגב.">
   <meta property="og:url" content="https://bguteachingcenter.github.io/BGU/">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://bguteachingcenter.github.io/BGU/logo.png">
 
   <style>
     :root {
-      /* ===== צבעים ראשיים (שפת המותג) ===== */
       --bgu-orange:        #f7941e;
       --bgu-orange-deep:   #e16327;
       --bgu-orange-tint:   #fde8cf;
@@ -64,11 +63,9 @@
     .hero {
       position: relative;
       overflow: hidden;
-      padding: 56px 24px 46px;
+      padding: 56px 24px 40px;
       text-align: center;
     }
-
-    /* מוטיב האלכסון - שכבות מקביליות מסביב לכותרת */
     .hero__deco { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
     .hero__deco span { position: absolute; display: block; }
     .deco-1 { width: 200px; height: 380px; top: -90px; right: -50px;
@@ -87,7 +84,7 @@
     .hero > * { position: relative; z-index: 1; }
 
     .hero__logo {
-      width: min(330px, 58%);
+      width: min(320px, 56%);
       height: auto;
       margin: 0 auto 10px;
       display: block;
@@ -116,207 +113,168 @@
       font-size: clamp(16px, 2.2vw, 19px);
       font-weight: 400;
       color: var(--bgu-gray-medium);
-      max-width: 620px;
-      margin: 0 auto 16px;
+      max-width: 640px;
+      margin: 0 auto;
       line-height: 1.5;
     }
 
-    /* המוטו - מחזק את הכותרת, מרוחק מהלוגו */
-    .hero__motto {
-      display: inline-block;
-      font-size: clamp(17px, 2.4vw, 22px);
-      font-weight: 700;
-      color: var(--bgu-orange-deep);
-    }
-    .hero__motto::before {
-      content: "";
-      display: inline-block;
-      width: 26px; height: 12px;
-      margin-left: 10px;
-      vertical-align: middle;
-      background: var(--bgu-gradient-1);
-      clip-path: polygon(30% 0, 100% 0, 70% 100%, 0 100%);
-    }
-
-    /* ===================== כפתורים בולטים ===================== */
-    .actions {
-      max-width: 920px;
-      margin: 34px auto 0;
+    /* ===================== שערים גדולים ===================== */
+    .gates {
+      max-width: 780px;
+      margin: 38px auto 0;
       padding: 0 24px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
     }
 
-    .feature {
+    .gate {
       position: relative;
       overflow: hidden;
       display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 22px 26px;
-      border-radius: 16px;
+      align-items: flex-start;
+      gap: 18px;
+      padding: 26px 28px;
+      border-radius: 18px;
       text-decoration: none;
       text-align: right;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      background: #ffffff;
+      border: 1px solid #eee;
+      box-shadow: 0 6px 18px rgba(88, 89, 91, 0.07);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     }
-    .feature::after { /* פס אלכסוני עדין - מוטיב הפרספקטיבה */
+    .gate::after { /* פס אלכסוני - מוטיב הפרספקטיבה */
       content: "";
       position: absolute;
-      top: 0; bottom: 0; left: -12px;
-      width: 74px;
-      background: rgba(255, 255, 255, 0.10);
+      top: 0; bottom: 0; left: -14px;
+      width: 82px;
+      background: var(--bgu-orange-tint);
+      opacity: .45;
       clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%);
       pointer-events: none;
     }
-    .feature--primary {
-      background: var(--bgu-gradient-1);
-      color: #fff;
-      box-shadow: 0 8px 22px rgba(225, 99, 39, 0.25);
+    .gate:hover {
+      transform: translateY(-4px);
+      border-color: var(--bgu-orange);
+      box-shadow: 0 12px 26px rgba(247, 148, 30, 0.18);
     }
-    .feature--secondary {
-      background: var(--bgu-gray-dark);
-      color: #fff;
-      box-shadow: 0 8px 22px rgba(88, 89, 91, 0.22);
-    }
-    .feature:hover { transform: translateY(-4px); }
-    .feature--primary:hover  { box-shadow: 0 12px 28px rgba(225, 99, 39, 0.33); }
-    .feature--secondary:hover{ box-shadow: 0 12px 28px rgba(88, 89, 91, 0.30); }
+    .gate > * { position: relative; z-index: 1; }
 
-    .feature__icon { font-size: 34px; flex: 0 0 auto; line-height: 1; }
-    .feature__text { display: flex; flex-direction: column; }
-    .feature__title { font-size: 21px; font-weight: 800; line-height: 1.15; }
-    .feature__desc  { font-size: 14px; font-weight: 400; opacity: 0.92; margin-top: 4px; }
-
-    /* ===================== רשת הקטגוריות ===================== */
-    .grid {
-      max-width: 1040px;
-      margin: 40px auto 0;
-      padding: 0 24px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
-      align-items: start;
+    .gate__icon {
+      font-size: 40px;
+      line-height: 1;
+      flex: 0 0 auto;
     }
-    /* כל טור הוא ערימת כרטיסיות עצמאית וצמודה */
-    .grid__col {
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .card {
-      background: #ffffff;
-      border: 1px solid #eee;
-      border-radius: 18px;
-      padding: 26px 20px 22px;
-      box-shadow: 0 6px 18px rgba(88, 89, 91, 0.07);
-    }
-
-    .card__title {
-      position: relative;
-      text-align: center;
+    .gate__text { display: flex; flex-direction: column; }
+    .gate__title {
       font-size: 22px;
       font-weight: 800;
       color: var(--bgu-text);
-      padding-bottom: 16px;
-      margin: 0 0 16px;
+      line-height: 1.15;
     }
-    .card__title::after { /* קו הדגשה אלכסוני */
-      content: "";
-      position: absolute;
-      bottom: 0; left: 50%;
-      transform: translateX(-50%);
-      width: 58px; height: 5px;
-      background: var(--bgu-gradient-1);
-      clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+    .gate__desc {
+      font-size: 14.5px;
+      font-weight: 400;
+      color: var(--bgu-gray-medium);
+      margin-top: 6px;
+      line-height: 1.45;
     }
 
-    .link {
+    /* שער "בקרוב" - מושבת */
+    .gate--soon {
+      background: #f6f5f3;
+      border-style: dashed;
+      cursor: default;
+      box-shadow: none;
+    }
+    .gate--soon::after { opacity: .25; }
+    .gate--soon:hover { transform: none; border-color: var(--bgu-gray-light); box-shadow: none; }
+    .gate--soon .gate__title,
+    .gate--soon .gate__icon { color: var(--bgu-gray-medium); filter: grayscale(0.3); }
+    .gate__badge {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--bgu-gray-medium);
+      background: var(--bgu-gray-light);
+      padding: 3px 12px;
+      border-radius: 999px;
+      margin-top: 10px;
+    }
+
+    /* ===================== קישורים משניים ===================== */
+    .secondary {
+      max-width: 900px;
+      margin: 26px auto 0;
+      padding: 0 24px;
       display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+    .slink {
+      display: inline-flex;
       align-items: center;
-      gap: 14px;
-      padding: 12px 14px;
-      margin: 10px 0;
+      gap: 9px;
+      padding: 10px 18px;
+      border-radius: 12px;
       background: #ffffff;
       border: 1px solid #eee;
-      border-radius: 12px;
       text-decoration: none;
       color: var(--bgu-text);
       font-weight: 700;
-      font-size: 17px;
-      transition: transform 0.2s ease, box-shadow 0.2s ease,
-                  border-color 0.2s ease, background 0.2s ease;
+      font-size: 15px;
       box-shadow: 0 2px 6px rgba(88, 89, 91, 0.04);
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
-    .link:hover {
+    .slink:hover {
       transform: translateY(-2px);
       border-color: var(--bgu-orange);
       background: #fffdf9;
-      box-shadow: 0 6px 16px rgba(247, 148, 30, 0.18);
     }
-
-    /* צ'יפ אייקון בצורת מקבילית - מוטיב האלכסון בזעיר-אנפין */
-    .link__chip {
-      position: relative;
-      flex: 0 0 auto;
-      width: 48px; height: 44px;
-      display: grid;
-      place-items: center;
-    }
-    .link__chip::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: var(--bgu-orange-tint);
-      clip-path: polygon(22% 0, 100% 0, 78% 100%, 0 100%);
-      transition: background 0.2s ease;
-      z-index: 0;
-    }
-    .link:hover .link__chip::before { background: var(--bgu-orange); }
-    .link__chip > span {
-      position: relative;
-      z-index: 1;
-      font-size: 23px;
-      line-height: 1;
-    }
-
-    .link__label { display: flex; flex-direction: column; }
-    .link__desc {
-      font-size: 14px;
-      font-weight: 400;
-      color: var(--bgu-gray-medium);
-      margin-top: 3px;
-    }
+    .slink__ico { font-size: 18px; line-height: 1; }
 
     /* ===================== פוטר ===================== */
     footer {
-      margin-top: 50px;
+      margin-top: 48px;
       padding: 24px;
       text-align: center;
       color: var(--bgu-gray-medium);
       font-size: 14px;
       border-top: 1px solid var(--bgu-gray-light);
     }
-
-    /* ===================== רספונסיביות ===================== */
-    @media (max-width: 700px) {
-      .actions { grid-template-columns: 1fr; }
-      .deco-2, .deco-4 { display: none; }
-      .hero { padding: 40px 18px 36px; }
+    .hero__motto {
+      display: inline-block;
+      font-size: clamp(16px, 2.2vw, 20px);
+      font-weight: 700;
+      color: var(--bgu-orange-deep);
+    }
+    .hero__motto::before {
+      content: "";
+      display: inline-block;
+      width: 24px; height: 11px;
+      margin-left: 10px;
+      vertical-align: middle;
+      background: var(--bgu-gradient-1);
+      clip-path: polygon(30% 0, 100% 0, 70% 100%, 0 100%);
     }
 
-    /* ===================== אנימציה עדינה ===================== */
+    @media (max-width: 700px) {
+      .deco-2, .deco-4 { display: none; }
+      .hero { padding: 40px 18px 32px; }
+      .gates { grid-template-columns: 1fr; }
+    }
+
     @media (prefers-reduced-motion: no-preference) {
-      .hero__logo, .hero__eyebrow, .hero__title,
-      .hero__sub, .hero__motto, .actions {
+      .hero__logo, .hero__eyebrow, .hero__title, .hero__sub, .gates, .secondary {
         animation: fadeUp 0.7s ease both;
       }
       .hero__eyebrow { animation-delay: 0.05s; }
       .hero__title   { animation-delay: 0.10s; }
       .hero__sub     { animation-delay: 0.18s; }
-      .hero__motto   { animation-delay: 0.26s; }
-      .actions       { animation-delay: 0.32s; }
+      .gates         { animation-delay: 0.26s; }
+      .secondary     { animation-delay: 0.34s; }
     }
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(14px); }
@@ -339,169 +297,64 @@
       <img src="logo.png" alt="לוגו אוניברסיטת בן-גוריון בנגב" class="hero__logo">
     </a>
 
-    <p class="hero__eyebrow">היחידה לקידום איכות ההוראה והלמידה · אוניברסיטת בן-גוריון בנגב</p>
+    <p class="hero__eyebrow">אוניברסיטת בן-גוריון בנגב</p>
 
-    <h1 class="hero__title">אוסף הסימולציות, המשחקים והבוטים</h1>
+    <h1 class="hero__title">היחידה לקידום איכות ההוראה והלמידה</h1>
 
     <p class="hero__sub">
-      כלים אינטראקטיביים מבוססי בינה מלאכותית להוראה וללמידה
+      כל הכלים במקום אחד — בוטים, בדיקת תרגילים, ספרי קורס וסימולציות
     </p>
-
   </header>
 
-  <!-- ===================== כפתורים בולטים ===================== -->
-  <!-- מורה נבוכים: החליפי את ה-# בכתובת האמיתית של האתר -->
-  <div class="actions">
-    <a href="https://bguteachingcenter.github.io/BGU/site-map/" class="feature feature--primary">
-      <span class="feature__icon">📚</span>
-      <span class="feature__text">
-        <span class="feature__title">מורה נבוכים</span>
-        <span class="feature__desc">המדריך למרצה - כל מה שצריך כדי להתחיל ללמד</span>
+  <!-- ===================== שערים גדולים ===================== -->
+  <main class="gates">
+
+    <a class="gate" href="https://botagent-tm7u.onrender.com/" target="_blank" rel="noopener">
+      <span class="gate__icon">🤖</span>
+      <span class="gate__text">
+        <span class="gate__title">בוטים</span>
+        <span class="gate__desc">בוטי־הוראה מבוססי בינה מלאכותית, בנויים מחומרי הקורס</span>
       </span>
     </a>
 
-    <a href="guidelines.html" class="feature feature--secondary">
-      <span class="feature__icon">📜</span>
-      <span class="feature__text">
-        <span class="feature__title">קווים מנחים</span>
-        <span class="feature__desc">להוראה וללמידה מרחוק</span>
+    <div class="gate gate--soon" aria-disabled="true">
+      <span class="gate__icon">✍️</span>
+      <span class="gate__text">
+        <span class="gate__title">בדיקת תרגילים</span>
+        <span class="gate__desc">הגשת עבודות ובדיקה אוטומטית עם פידבק מיידי</span>
+        <span class="gate__badge">בקרוב</span>
+      </span>
+    </div>
+
+    <a class="gate" href="library/">
+      <span class="gate__icon">📚</span>
+      <span class="gate__text">
+        <span class="gate__title">ספרי הקורס</span>
+        <span class="gate__desc">ספרי קורס דיגיטליים, פתוחים וחינמיים</span>
       </span>
     </a>
 
-    <a href="library/" class="feature feature--primary">
-      <span class="feature__icon">📚</span>
-      <span class="feature__text">
-        <span class="feature__title">ספרי הקורס</span>
-        <span class="feature__desc">ספרי קורס דיגיטליים - אלגברה לינארית, חשבון ועוד</span>
+    <a class="gate" href="simulations/">
+      <span class="gate__icon">🔬</span>
+      <span class="gate__text">
+        <span class="gate__title">מאגר הסימולציות</span>
+        <span class="gate__desc">סימולציות, משחקים וכלים אינטראקטיביים להוראה</span>
       </span>
     </a>
-  </div>
-
-  <!-- ===================== רשת הקטגוריות ===================== -->
-  <main class="grid">
-
-    <!-- טור 1 (ימין): דפים אינטראקטיביים + סימולציות -->
-    <div class="grid__col">
-    <section class="card">
-      <h2 class="card__title">💡 דפים אינטראקטיביים</h2>
-      <a class="link" href="https://claude.ai/public/artifacts/e43c7bc6-ccb4-4986-8cce-fd54919df2f9">
-        <span class="link__chip"><span>📖</span></span>
-        <span class="link__label">שפינוזה</span>
-      </a>
-    </section>
-
-    <section class="card">
-      <h2 class="card__title">🔬 סימולציות</h2>
-      <a class="link" href="multitasking-balloons.html">
-        <span class="link__chip"><span>🎈</span></span>
-        <span class="link__label">מולטיטאקינג - אשליה או מציאות?</span>
-      </a>
-      <a class="link" href="snell1/">
-        <span class="link__chip"><span>🔍</span></span>
-        <span class="link__label">חוק סנל - תיאוריה</span>
-      </a>
-      <a class="link" href="pendulum/">
-        <span class="link__chip"><span>🕰️</span></span>
-        <span class="link__label">פונקציית תמסורת מסדר שני</span>
-      </a>
-      <a class="link" href="biology/">
-        <span class="link__chip"><span>🧫</span></span>
-        <span class="link__label">גידול חיידקים</span>
-      </a>
-    </section>
-    </div>
-
-    <!-- טור 2 (אמצע): משחקים -->
-    <div class="grid__col">
-    <section class="card">
-      <h2 class="card__title">🎮 משחקים</h2>
-      <a class="link" href="syllogism1/">
-        <span class="link__chip"><span>🧩</span></span>
-        <span class="link__label">מבוך ההסקים 1</span>
-      </a>
-      <a class="link" href="syllogism2/">
-        <span class="link__chip"><span>🏛️</span></span>
-        <span class="link__label">מבוך ההסקים 2 - גרסת הפילוסופים</span>
-      </a>
-      <a class="link" href="investments/">
-        <span class="link__chip"><span>📈</span></span>
-        <span class="link__label">משחק ההשקעות</span>
-      </a>
-      <a class="link" href="stroop/">
-        <span class="link__chip"><span>🎨</span></span>
-        <span class="link__label">מבחן סטרופ</span>
-      </a>
-      <a class="link" href="flanker/">
-        <span class="link__chip"><span>🎯</span></span>
-        <span class="link__label">תחרות פלאנקר</span>
-      </a>
-      <a class="link" href="prisoner/">
-        <span class="link__chip"><span>🚔</span></span>
-        <span class="link__label">דילמת האסיר</span>
-      </a>
-      <a class="link" href="snell2/">
-        <span class="link__chip"><span>🏊</span></span>
-        <span class="link__label">חוק סנל - משחק המצילים</span>
-      </a>
-    </section>
-    </div>
-
-    <!-- טור 3 (שמאל): בוטים ללמידה + משחקי תפקידים -->
-    <div class="grid__col">
-    <section class="card">
-      <h2 class="card__title">📖 בוטים ללמידה</h2>
-      <a class="link" href="https://chatgpt.com/g/g-6834645ece2c8191873a27515e2b0f96-svtsyv-ryyt" target="_blank">
-        <span class="link__chip"><span>✍️</span></span>
-        <span class="link__label">סוציו-רייט - שיפור כתיבה</span>
-      </a>
-      <a class="link" href="https://chatgpt.com/g/g-67f77ae5b5788191b49e5fd18da446f0-ktybh-qdmyt-myzvg-r-yvnvt-d-r-y-l-lyn" target="_blank">
-        <span class="link__chip"><span>🧠</span></span>
-        <span class="link__label">כתיבה אקדמית: מיזוג רעיונות</span>
-      </a>
-      <a class="link" href="flashcards/">
-        <span class="link__chip"><span>📑</span></span>
-        <span class="link__label">מחולל כרטיסיות שינון</span>
-      </a>
-    </section>
-
-    <section class="card">
-      <h2 class="card__title">🎭 משחקי תפקידים</h2>
-      <a class="link" href="https://chatgpt.com/g/g-6831913efa1c8191b24341a0c4455ccd-dy-bvt" target="_blank">
-        <span class="link__chip"><span>🗣️</span></span>
-        <span class="link__label">הדיבוט - אימון דיבייטים</span>
-      </a>
-      <a class="link" href="https://chatgpt.com/g/g-67ea6551f1488191bcdb892d610fe23b-symvltvr-shl-dylmvt-pdgvgyvt" target="_blank">
-        <span class="link__chip"><span>📚</span></span>
-        <span class="link__label">סימולטור דילמות פדגוגיות</span>
-      </a>
-    </section>
-    </div>
-
-    <!-- ====== קטגוריה מוסתרת (מוכנה להפעלה בעתיד): למידה מרחוק בתמיכת AI ======
-    <section class="card">
-      <h2 class="card__title">🌐 למידה מרחוק בתמיכת AI</h2>
-      <a class="link" href="#">
-        <span class="link__chip"><span>🎧</span></span>
-        <span class="link__label">הפודקאסט של הקורס (NotebookLM)
-          <span class="link__desc">הפיכת מאמרי הקורס לשיחה קולית מרתקת לסטודנטים.</span>
-        </span>
-      </a>
-      <a class="link" href="#">
-        <span class="link__chip"><span>🎯</span></span>
-        <span class="link__label">מחולל מחוונים (Rubrics)
-          <span class="link__desc">יצירת קריטריונים ברורים להערכה בשיעורי זום ומטלות בית.</span>
-        </span>
-      </a>
-      <a class="link" href="#">
-        <span class="link__chip"><span>💡</span></span>
-        <span class="link__label">מפצח המושגים
-          <span class="link__desc">שימוש ב-AI ליצירת אנלוגיות למושגים מורכבים בלמידה עצמית.</span>
-        </span>
-      </a>
-    </section>
-    ====== סוף קטגוריה מוסתרת ====== -->
 
   </main>
+
+  <!-- ===================== קישורים משניים ===================== -->
+  <nav class="secondary" aria-label="קישורים נוספים">
+    <a class="slink" href="site-map/">
+      <span class="slink__ico">🧭</span>
+      מורה נבוכים
+    </a>
+    <a class="slink" href="guidelines.html">
+      <span class="slink__ico">📜</span>
+      קווים מנחים
+    </a>
+  </nav>
 
   <footer>
     <span class="hero__motto">כשמשנים פרספקטיבה, מגלים עולמות.</span>
