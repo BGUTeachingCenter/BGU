@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הדגמת דילמת האסיר</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #0056b3;
+            text-align: center;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            text-align: center;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        th {
+            background-color: #eef;
+        }
+        .payoffs {
+            font-weight: bold;
+            color: #007bff; /* Blue for player 1 */
+        }
+        .payoffs span {
+            color: #dc3545; /* Red for player 2 */
+        }
+        .setup, .game-area, .summary {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .hidden {
+            display: none;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .choice-btn {
+            background-color: #28a745; /* Green for cooperate */
+        }
+        .choice-btn.defect {
+            background-color: #dc3545; /* Red for defect */
+        }
+         .choice-btn:hover {
+            opacity: 0.9;
+        }
+        label {
+            margin-left: 5px;
+            margin-right: 15px;
+        }
+        input[type="number"], select {
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-width: 100px;
+        }
+        .round-info, .player-turn {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .results-log {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 10px;
+            background-color: #fff;
+        }
+        .results-log p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .final-score {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 15px;
+            color: #333;
+        }
+         .analysis {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+        .player-indicator {
+             display: inline-block;
+             padding: 2px 8px;
+             border-radius: 4px;
+             color: white;
+             font-size: 0.9em;
+        }
+        .player1-indicator { background-color: #007bff; }
+        .player2-indicator { background-color: #dc3545; }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>דילמת האסיר: הדגמה אינטראקטיבית</h1>
+
+        <div class="introduction">
+            <h2>מהי דילמת האסיר?</h2>
+            <p>
+                דילמת האסיר היא דוגמה קלאסית מתורת המשחקים שממחישה מצב שבו פעולה רציונלית של כל פרט למען האינטרס העצמי שלו, מובילה לתוצאה גרועה יותר עבור כלל המשתתפים, מאשר אם היו משתפים פעולה.
+            </p>
+            <p>
+                הסיפור הקלאסי: שני פושעים נתפסים ומובאים לחקירה בחדרים נפרדים. אין להם אפשרות לתקשר. החוקר מציע לכל אחד מהם עסקה:
+                <ul>
+                    <li>אם תלשין על שותפך (תבגוד), והוא ישתוק (ישתף פעולה איתו), אתה תשוחרר והוא יקבל 10 שנות מאסר.</li>
+                    <li>אם שניכם תלשינו (תבגדו) אחד על השני, כל אחד מכם יקבל 5 שנות מאסר.</li>
+                    <li>אם שניכם תשתקו (תשתפו פעולה זה עם זה), כל אחד מכם יקבל שנה אחת בלבד (על עבירה פחותה).</li>
+                </ul>
+                המטרה של כל אסיר היא למזער את מספר שנות המאסר שלו, מבלי לדעת מה יבחר האסיר השני.
+             </p>
+             <p>
+                בדמו זה נשתמש בנקודות במקום שנות מאסר, כאשר <strong>מטרה היא לצבור כמה שיותר נקודות</strong>.
+            </p>
+        </div>
+
+        <h2>מטריצת התשלומים (נקודות)</h2>
+        <table>
+            <tr>
+                <th colspan="2" rowspan="2"></th>
+                <th colspan="2">שחקן 2</th>
+            </tr>
+            <tr>
+                <th>משתף פעולה</th>
+                <th>בוגד</th>
+            </tr>
+            <tr>
+                <th rowspan="2">שחקן 1</th>
+                <th>משתף פעולה</th>
+                <td><span class="payoffs"><span class="player1-indicator">3</span>, <span class="player2-indicator">3</span></span></td>
+                <td><span class="payoffs"><span class="player1-indicator">0</span>, <span class="player2-indicator">5</span></span></td>
+            </tr>
+            <tr>
+                <th>בוגד</th>
+                <td><span class="payoffs"><span class="player1-indicator">5</span>, <span class="player2-indicator">0</span></span></td>
+                <td><span class="payoffs"><span class="player1-indicator">1</span>, <span class="player2-indicator">1</span></span></td>
+            </tr>
+        </table>
+        <p style="text-align: center;">
+            בכל תא, הספרה הכחולה מייצגת את הניקוד של <span class="player1-indicator">שחקן 1</span>, והספרה האדומה את הניקוד של <span class="player2-indicator">שחקן 2</span>.
+        </p>
+
+        <div class="setup" id="setup-section">
+            <h2>הגדרות המשחק</h2>
+            <div>
+                <label>בחר מצב משחק:</label>
+                <input type="radio" id="mode-computer" name="gameMode" value="computer" checked>
+                <label for="mode-computer">שחקן מול מחשב</label>
+                <input type="radio" id="mode-player" name="gameMode" value="player">
+                <label for="mode-player">שחקן מול שחקן</label>
+            </div>
+            <div id="ai-strategy-selector">
+                <label for="ai-strategy">בחר אסטרטגיה למחשב:</label>
+                <select id="ai-strategy">
+                    <option value="TFT">מידה כנגד מידה (Tit-for-Tat)</option>
+                    <option value="ALWAYS_DEFECT">תמיד בוגד</option>
+                    <option value="ALWAYS_COOPERATE">תמיד משתף פעולה</option>
+                    <option value="RANDOM">אקראי</option>
+                </select>
+            </div>
+            <div>
+                <label for="num-rounds">מספר סיבובים:</label>
+                <input type="number" id="num-rounds" value="5" min="1" max="50">
+            </div>
+            <button id="start-game-btn">התחל משחק</button>
+        </div>
+
+        <div class="game-area hidden" id="game-section">
+            <h2 id="round-title">סיבוב 1 מתוך 5</h2>
+            <div id="player1-turn" class="player-turn">
+                <h3><span class="player1-indicator">תור שחקן 1</span></h3>
+                <p>בחר את פעולתך:</p>
+                <button class="choice-btn" onclick="handlePlayerChoice('player1', 'COOPERATE')">שתף פעולה</button>
+                <button class="choice-btn defect" onclick="handlePlayerChoice('player1', 'DEFECT')">בגוד</button>
+            </div>
+             <div id="player2-turn" class="player-turn hidden">
+                <h3><span class="player2-indicator">תור שחקן 2</span></h3>
+                <p>בחר את פעולתך:</p>
+                <button class="choice-btn" onclick="handlePlayerChoice('player2', 'COOPERATE')">שתף פעולה</button>
+                <button class="choice-btn defect" onclick="handlePlayerChoice('player2', 'DEFECT')">בגוד</button>
+            </div>
+             <div id="waiting-message" class="hidden"><p>ממתין לבחירת השחקן השני...</p></div>
+             <div id="round-result" class="hidden">
+                <h3>תוצאות הסיבוב</h3>
+                <p id="round-result-text"></p>
+                <p id="round-score-text"></p>
+                <button id="next-round-btn" class="hidden">המשך לסיבוב הבא</button>
+            </div>
+            <div class="results-log" id="results-log">
+                 <h4>היסטוריית סיבובים:</h4>
+            </div>
+        </div>
+
+        <div class="summary hidden" id="summary-section">
+            <h2>סיכום המשחק</h2>
+            <div id="final-scores" class="final-score"></div>
+             <div class="analysis" id="game-analysis">
+                <h3>ניתוח התוצאות</h3>
+                <p id="analysis-text">ניתוח יופיע כאן בסיום המשחק.</p>
+            </div>
+            <button id="restart-game-btn">שחק שוב</button>
+        </div>
+    </div>
+
+    <script>
+        // Game constants
+        const PAYOFFS = {
+            // Player1: Cooperate, Player2: Cooperate
+            'COOPERATE_COOPERATE': { p1: 3, p2: 3 },
+            // Player1: Cooperate, Player2: Defect
+            'COOPERATE_DEFECT':    { p1: 0, p2: 5 },
+            // Player1: Defect, Player2: Cooperate
+            'DEFECT_COOPERATE':    { p1: 5, p2: 0 },
+            // Player1: Defect, Player2: Defect
+            'DEFECT_DEFECT':       { p1: 1, p2: 1 },
+        };
+
+        const HEBREW_ACTIONS = {
+            'COOPERATE': 'שיתף פעולה',
+            'DEFECT': 'בגד'
+        };
+
+        // Game state variables
+        let gameMode; // 'computer' or 'player'
+        let aiStrategy;
+        let totalRounds;
+        let currentRound = 0;
+        let player1Score = 0;
+        let player2Score = 0;
+        let player1History = [];
+        let player2History = [];
+        let player1Choice = null;
+        let player2Choice = null;
+
+        // DOM Elements
+        const setupSection = document.getElementById('setup-section');
+        const gameSection = document.getElementById('game-section');
+        const summarySection = document.getElementById('summary-section');
+        const aiStrategySelector = document.getElementById('ai-strategy-selector');
+        const modeComputerRadio = document.getElementById('mode-computer');
+        const modePlayerRadio = document.getElementById('mode-player');
+        const numRoundsInput = document.getElementById('num-rounds');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const roundTitle = document.getElementById('round-title');
+        const player1TurnDiv = document.getElementById('player1-turn');
+        const player2TurnDiv = document.getElementById('player2-turn');
+        const waitingMessage = document.getElementById('waiting-message');
+        const roundResultDiv = document.getElementById('round-result');
+        const roundResultText = document.getElementById('round-result-text');
+        const roundScoreText = document.getElementById('round-score-text');
+        const nextRoundBtn = document.getElementById('next-round-btn');
+        const resultsLog = document.getElementById('results-log');
+        const finalScoresDiv = document.getElementById('final-scores');
+        const analysisText = document.getElementById('analysis-text');
+        const restartGameBtn = document.getElementById('restart-game-btn');
+
+        // Event Listeners
+        modeComputerRadio.addEventListener('change', updateAiSelectorVisibility);
+        modePlayerRadio.addEventListener('change', updateAiSelectorVisibility);
+        startGameBtn.addEventListener('click', startGame);
+        nextRoundBtn.addEventListener('click', nextRound);
+        restartGameBtn.addEventListener('click', restartGame);
+
+        // --- Functions ---
+
+        function updateAiSelectorVisibility() {
+            aiStrategySelector.style.display = modeComputerRadio.checked ? 'block' : 'none';
+        }
+
+        function startGame() {
+            gameMode = document.querySelector('input[name="gameMode"]:checked').value;
+            totalRounds = parseInt(numRoundsInput.value);
+            if (isNaN(totalRounds) || totalRounds < 1) {
+                alert("אנא הזן מספר סיבובים חוקי (גדול מ-0).");
+                return;
+            }
+
+            if (gameMode === 'computer') {
+                aiStrategy = document.getElementById('ai-strategy').value;
+            }
+
+            // Reset state
+            currentRound = 0;
+            player1Score = 0;
+            player2Score = 0;
+            player1History = [];
+            player2History = [];
+            player1Choice = null;
+            player2Choice = null;
+            resultsLog.innerHTML = '<h4>היסטוריית סיבובים:</h4>'; // Clear log
+
+            // Update UI
+            setupSection.classList.add('hidden');
+            summarySection.classList.add('hidden');
+            gameSection.classList.remove('hidden');
+            roundResultDiv.classList.add('hidden');
+            nextRoundBtn.classList.add('hidden');
+
+
+            nextRound(); // Start the first round
+        }
+
+        function setupRound() {
+            roundTitle.textContent = `סיבוב ${currentRound} מתוך ${totalRounds}`;
+            player1Choice = null;
+            player2Choice = null;
+
+            // Reset button states and visibility
+            enableChoiceButtons('player1', true);
+             enableChoiceButtons('player2', true);
+             player1TurnDiv.classList.remove('hidden');
+             roundResultDiv.classList.add('hidden');
+            waitingMessage.classList.add('hidden');
+
+
+            if (gameMode === 'computer') {
+                player2TurnDiv.classList.add('hidden'); // AI doesn't need buttons
+            } else {
+                // Player vs Player: Initially show P1's turn, hide P2's
+                player2TurnDiv.classList.add('hidden');
+            }
+        }
+
+        function handlePlayerChoice(player, choice) {
+            if (player === 'player1') {
+                player1Choice = choice;
+                enableChoiceButtons('player1', false); // Disable P1 buttons after choice
+
+                if (gameMode === 'computer') {
+                    player2Choice = getAIChoice();
+                    processRound();
+                } else {
+                    // Player vs Player: Hide P1 turn, show P2 turn
+                    player1TurnDiv.classList.add('hidden');
+                    player2TurnDiv.classList.remove('hidden');
+                     waitingMessage.classList.add('hidden');
+                 }
+            } else { // player === 'player2'
+                player2Choice = choice;
+                enableChoiceButtons('player2', false); // Disable P2 buttons
+                processRound();
+            }
+        }
+
+         function enableChoiceButtons(player, enabled) {
+            const buttons = document.querySelectorAll(`#${player}-turn .choice-btn`);
+            buttons.forEach(button => button.disabled = !enabled);
+        }
+
+
+        function getAIChoice() {
+            switch (aiStrategy) {
+                case 'ALWAYS_DEFECT':
+                    return 'DEFECT';
+                case 'ALWAYS_COOPERATE':
+                    return 'COOPERATE';
+                case 'RANDOM':
+                    return Math.random() < 0.5 ? 'COOPERATE' : 'DEFECT';
+                case 'TFT': // Tit-for-Tat
+                    // Cooperate on the first round, otherwise mimic player 1's previous move
+                    return currentRound === 1 ? 'COOPERATE' : player1History[player1History.length - 1];
+                default:
+                    return 'DEFECT'; // Default fallback
+            }
+        }
+
+        function processRound() {
+             if (!player1Choice || !player2Choice) {
+                 console.error("Error: Choices not fully determined.");
+                 return;
+             }
+
+            const outcomeKey = `${player1Choice}_${player2Choice}`;
+            const payoffs = PAYOFFS[outcomeKey];
+
+            player1Score += payoffs.p1;
+            player2Score += payoffs.p2;
+            player1History.push(player1Choice);
+            player2History.push(player2Choice);
+
+            // Display round results
+            const p1ActionText = HEBREW_ACTIONS[player1Choice];
+            const p2ActionText = HEBREW_ACTIONS[player2Choice];
+            roundResultText.innerHTML = `
+                <span class="player1-indicator">שחקן 1</span> בחר: ${p1ActionText}.<br>
+                <span class="player2-indicator">${gameMode === 'computer' ? 'מחשב' : 'שחקן 2'}</span> בחר: ${p2ActionText}.
+            `;
+            roundScoreText.innerHTML = `
+                ניקוד בסיבוב: <span class="player1-indicator">שחקן 1</span> קיבל ${payoffs.p1} נק',
+                <span class="player2-indicator">${gameMode === 'computer' ? 'מחשב' : 'שחקן 2'}</span> קיבל ${payoffs.p2} נק'.<br>
+                ניקוד כולל: <span class="player1-indicator">שחקן 1</span>: ${player1Score},
+                <span class="player2-indicator">${gameMode === 'computer' ? 'מחשב' : 'שחקן 2'}</span>: ${player2Score}.
+            `;
+
+             // Log the round result
+            const logEntry = document.createElement('p');
+            logEntry.innerHTML = `סיבוב ${currentRound}:
+                <span class="player1-indicator">שחקן 1</span> (${p1ActionText}),
+                <span class="player2-indicator">${gameMode === 'computer' ? 'מחשב' : 'שחקן 2'}</span> (${p2ActionText}) |
+                ניקוד: ${payoffs.p1} , ${payoffs.p2} |
+                סה"כ: ${player1Score} , ${player2Score}`;
+            resultsLog.appendChild(logEntry);
+            resultsLog.scrollTop = resultsLog.scrollHeight; // Scroll to bottom
+
+
+            // Update UI for next step
+            player1TurnDiv.classList.add('hidden');
+            player2TurnDiv.classList.add('hidden');
+            waitingMessage.classList.add('hidden');
+             roundResultDiv.classList.remove('hidden');
+
+
+            if (currentRound < totalRounds) {
+                nextRoundBtn.classList.remove('hidden');
+                 nextRoundBtn.textContent = "המשך לסיבוב הבא";
+             } else {
+                 nextRoundBtn.classList.remove('hidden');
+                 nextRoundBtn.textContent = "סיים והצג סיכום";
+            }
+         }
+
+        function nextRound() {
+             roundResultDiv.classList.add('hidden');
+             nextRoundBtn.classList.add('hidden');
+
+            if (currentRound < totalRounds) {
+                currentRound++;
+                setupRound();
+            } else {
+                endGame();
+            }
+        }
+
+
+        function endGame() {
+            gameSection.classList.add('hidden');
+            summarySection.classList.remove('hidden');
+
+            const player2Name = gameMode === 'computer' ? 'מחשב' : 'שחקן 2';
+            finalScoresDiv.innerHTML = `
+                הניקוד הסופי לאחר ${totalRounds} סיבובים:<br>
+                <span class="player1-indicator">שחקן 1</span>: ${player1Score} נקודות<br>
+                <span class="player2-indicator">${player2Name}</span>: ${player2Score} נקודות
+            `;
+
+            displayAnalysis();
+        }
+
+         function displayAnalysis() {
+            let analysis = "";
+            const player2Name = gameMode === 'computer' ? 'מחשב' : 'שחקן 2';
+
+            // Nash Equilibrium analysis
+            analysis += `<h3>ניתוח תיאורטי</h3>`;
+            analysis += `<p>בדילמת האסיר הקלאסית (במשחק חד-פעמי), האסטרטגיה הדומיננטית עבור כל שחקן היא <strong>לבגוד</strong>. מדוע?`;
+            analysis += `<ul><li>אם השחקן השני משתף פעולה, עדיף לי לבגוד (אקבל 5 נק' במקום 3).</li>`;
+            analysis += `<li>אם השחקן השני בוגד, עדיף לי לבגוד (אקבל 1 נק' במקום 0).</li></ul></p>`;
+            analysis += `<p>לכן, התוצאה הצפויה לפי תורת המשחקים הרציונלית היא ששני השחקנים יבגדו (Defect, Defect), ויקבלו כל אחד נקודה אחת. תוצאה זו נקראת <strong>שיווי משקל נאש</strong>, מכיוון שאף שחקן לא יכול לשפר את מצבו באופן חד-צדדי על ידי שינוי האסטרטגיה שלו, בהינתן האסטרטגיה של השחקן השני.</p>`;
+
+            // Pareto Optimality comparison
+            analysis += `<p>עם זאת, תוצאת שיווי משקל נאש (1,1) היא <strong>גרועה יותר</strong> עבור שני השחקנים מאשר התוצאה שהיו משיגים אם שניהם היו משתפים פעולה (3,3). תוצאת שיתוף הפעולה (Cooperate, Cooperate) היא <strong>יעילה פארטו</strong>, מכיוון שלא ניתן לשפר את מצבו של שחקן אחד מבלי להרע את מצבו של האחר (ביחס לתוצאה זו). דילמת האסיר מדגימה את המתח בין רציונליות אישית לבין טובת הכלל.</p>`;
+
+            // Repeated games context
+            analysis += `<h3>המשחק החוזר</h3>`;
+            analysis += `<p>כאשר המשחק משוחק מספר פעמים (כמו בדמו זה), האסטרטגיות יכולות להשתנות. שחקנים יכולים "להעניש" בגידות קודמות או "לתגמל" שיתוף פעולה. `;
+            if (gameMode === 'computer') {
+                 analysis += `במשחק זה, המחשב שיחק באסטרטגיית "${getAIStrategyName(aiStrategy)}". `;
+                if (aiStrategy === 'TFT') {
+                    analysis += `אסטרטגיית "מידה כנגד מידה" (Tit-for-Tat), שמתחילה בשיתוף פעולה ומחקה את המהלך הקודם של היריב, נחשבת לאסטרטגיה יעילה מאוד במשחקים חוזרים, מכיוון שהיא מעודדת שיתוף פעולה הדדי אך מענישה בגידות באופן מיידי.`;
+                } else if (aiStrategy === 'ALWAYS_DEFECT') {
+                    analysis += `אסטרטגיית "תמיד בוגד" מנצלת שחקנים שמשתפים פעולה, אך מובילה לתוצאות נמוכות אם גם היריב בוגד.`;
+                } else if (aiStrategy === 'ALWAYS_COOPERATE') {
+                    analysis += `אסטרטגיית "תמיד משתף פעולה" היא נאיבית ופגיעה לבגידות, אך יכולה להוביל לתוצאות גבוהות אם גם היריב משתף פעולה.`;
+                } else if (aiStrategy === 'RANDOM') {
+                    analysis += `אסטרטגיה אקראית היא בלתי צפויה ויכולה להוביל לתוצאות מגוונות.`;
+                 }
+            } else {
+                 analysis += `במשחק בין שני שחקנים אנושיים, ניתן לראות כיצד אמון, חשש מנקמה, או רצון למקסם רווח משותף משפיעים על הבחירות לאורך זמן.`;
+            }
+             analysis += `</p>`;
+
+            // Connect to game results
+            analysis += `<h3>ניתוח התוצאות שלכם</h3>`;
+             const totalPossibleCoopScore = 3 * totalRounds;
+             const totalPossibleDefectScore = 1 * totalRounds;
+             const p1CoopRatio = player1History.filter(m => m === 'COOPERATE').length / totalRounds;
+             const p2CoopRatio = player2History.filter(m => m === 'COOPERATE').length / totalRounds;
+
+            analysis += `<p>במשחק ששיחקתם:
+                <span class="player1-indicator">שחקן 1</span> שיתף פעולה ב-${(p1CoopRatio * 100).toFixed(0)}% מהסיבובים וצבר ${player1Score} נקודות.
+                <span class="player2-indicator">${player2Name}</span> שיתף פעולה ב-${(p2CoopRatio * 100).toFixed(0)}% מהסיבובים וצבר ${player2Score} נקודות.
+             </p>`;
+
+            if (player1Score > totalPossibleCoopScore || player2Score > totalPossibleCoopScore) {
+                 analysis += `<p>שימו לב כי ניקוד גבוה (מעל ${totalPossibleCoopScore}) עבור אחד השחקנים הושג ככל הנראה על חשבון השחקן השני (כאשר אחד בגד והשני שיתף פעולה).</p>`;
+            } else if (player1Score === totalPossibleCoopScore && player2Score === totalPossibleCoopScore) {
+                analysis += `<p>הצלחתם להגיע לתוצאה האופטימלית מבחינה קבוצתית (שיתוף פעולה מלא)! זה מראה כיצד במשחק חוזר ניתן להתגבר על הפיתוי לבגוד ולהשיג תוצאה טובה יותר לכולם.</p>`;
+            } else if (player1Score === totalPossibleDefectScore && player2Score === totalPossibleDefectScore) {
+                 analysis += `<p>שני השחקנים הגיעו לתוצאת שיווי משקל נאש (בגידה הדדית) באופן עקבי. זו התוצאה ה"רציונלית" מבחינה אישית במשחק חד פעמי, אך פחות טובה מהתוצאה השיתופית.</p>`;
+            } else {
+                 analysis += `<p>התוצאות מעורבות, כנראה כתוצאה משילוב של שיתוף פעולה ובגידות לאורך הסיבובים. תוצאות כאלה נפוצות במשחקים חוזרים, ומשקפות את הדינמיקה המורכבת של אמון, תגמול וענישה.</p>`;
+            }
+
+
+            analysisText.innerHTML = analysis;
+        }
+
+         function getAIStrategyName(strategyKey) {
+             switch (strategyKey) {
+                 case 'TFT': return 'מידה כנגד מידה (Tit-for-Tat)';
+                 case 'ALWAYS_DEFECT': return 'תמיד בוגד';
+                 case 'ALWAYS_COOPERATE': return 'תמיד משתף פעולה';
+                 case 'RANDOM': return 'אקראי';
+                 default: return 'לא ידוע';
+             }
+        }
+
+
+        function restartGame() {
+            // Reset UI to initial state
+            summarySection.classList.add('hidden');
+            gameSection.classList.add('hidden');
+             setupSection.classList.remove('hidden');
+             updateAiSelectorVisibility(); // Ensure AI selector is correctly shown/hidden based on default radio button
+        }
+
+        // Initial setup
+        updateAiSelectorVisibility(); // Set visibility based on default check
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תחרות המצילים - חוק סנל</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>תחרות המצילים: הדגמת חוק סנל לשני שחקנים</h1>
+<p class="subtitle">הדגמה המבוססת על עקרון הזמן המינימלי (עקרון פרמה), המקביל לחוק סנל בשבירת אור בין תווכים שונים.</p>
+    <div id="setup">
+        <h2>הגדרות משחק:</h2>
+        <label for="rounds">בחר מספר סיבובים:</label>
+        <select id="rounds">
+            <option value="1">סיבוב אחד</option>
+            <option value="3" selected>3 סיבובים</option>
+            <option value="5">5 סיבובים</option>
+        </select>
+        <button id="startGameButton">התחל משחק</button>
+    </div>
+
+    <div id="gameArea" style="display: none;">
+        <p id="statusText">סטטוס: ממתין...</p>
+        <p id="roundInfo">סיבוב: - / -</p>
+
+        <div class="simulation-container">
+            <canvas id="rescueCanvas" width="800" height="500"></canvas>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="sandSpeed">מהירות ריצה על החול (מטר/שניה): </label>
+                <input type="range" id="sandSpeed" min="1" max="10" value="5" step="0.5">
+                <span id="sandSpeedValue">5.0</span> מ'/ש'
+            </div>
+            <div class="control-group">
+                <label for="waterSpeed">מהירות שחיה במים (מטר/שניה): </label>
+                <input type="range" id="waterSpeed" min="0.5" max="5" value="1.5" step="0.1">
+                <span id="waterSpeedValue">1.5</span> מ'/ש'
+            </div>
+             <button id="nextRoundButton" style="display: none;">התחל סיבוב הבא</button>
+             <button id="newGameButton" style="display: none;">משחק חדש</button>
+        </div>
+
+        <div class="results">
+            <h2>תוצאות הסיבוב:</h2>
+            <div class="player-results">
+                <h3>שחקן 1</h3>
+                <p>זמן הגעה: <span id="p1Time">--</span> שנ'</p>
+                <p>ציון: <span id="p1Score">--</span> <img id="p1Face" src="neutral.png" alt="פ1" width="30"></p>
+            </div>
+            <div class="player-results">
+                <h3>שחקן 2</h3>
+                <p>זמן הגעה: <span id="p2Time">--</span> שנ'</p>
+                <p>ציון: <span id="p2Score">--</span> <img id="p2Face" src="neutral.png" alt="פ2" width="30"></p>
+             </div>
+             <p>זמן אופטימלי: <span id="optimalTime">--</span> שנ'</p>
+             <p id="roundWinner"></p>
+        </div>
+	 
+	 <div id="mathEquations" style="display: none; width: 100%; text-align: right; margin-top: 15px; border-top: 1px solid #ccc; padding-top: 10px; font-size: 0.9em; line-height: 1.6;">
+             <h4>הסבר מתמטי (ערכים מקורבים):</h4>
+             <p>הזמן הכולל (T) מחושב כסכום הזמן על החול (t<sub>חול</sub>) והזמן במים (t<sub>מים</sub>):</p>
+             <p style="text-align: center; font-weight: bold; margin: 5px 0;">T = t<sub>חול</sub> + t<sub>מים</sub> = [מרחק<sub>חול</sub> / מהירות<sub>חול</sub>] + [מרחק<sub>מים</sub> / מהירות<sub>מים</sub>]</p>
+             <p>כאשר מרחק = √((x<sub>2</sub>-x<sub>1</sub>)<sup>2</sup> + (y<sub>2</sub>-y<sub>1</sub>)<sup>2</sup>). זכור: המרחקים כאן מוכפלים בקנה מידה (כפי שהוגדר בקוד) לפני חישוב הזמן.</p>
+             <div id="p1Equation" style="margin-top: 10px;"><strong>שחקן 1:</strong> <span></span></div>
+             <div id="p2Equation" style="margin-top: 5px;"><strong>שחקן 2:</strong> <span></span></div>
+             <div id="optimalEquation" style="margin-top: 5px;"><strong>אופטימלי:</strong> <span></span></div>
+         </div>
+	 
+         <div id="finalResult" style="display: none;">
+            <h2>תוצאות סופיות</h2>
+            <p>שחקן 1 ניצחונות: <span id="p1Wins">0</span></p>
+            <p>שחקן 2 ניצחונות: <span id="p2Wins">0</span></p>
+            <p><strong>המנצח במשחק: <span id="gameWinner">--</span></strong></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

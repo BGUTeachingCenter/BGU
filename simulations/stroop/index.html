@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>וריאציות על אפקט סטרופ</title>
+    <link rel="stylesheet" href="stroop_variants_style.css">
+</head>
+<body>
+    <div class="main-container">
+
+        <!-- 1. מסך בחירת גרסה -->
+        <div id="selectionScreen">
+            <h1>וריאציות על אפקט סטרופ</h1>
+            <p>בחר את גרסת מבחן הסטרופ שברצונך לנסות:</p>
+            <div class="variant-buttons">
+                <button data-variant="classic">סטרופ קלאסי (צבע-מילה)</button>
+                <button data-variant="emotional">סטרופ רגשי</button>
+                <button data-variant="numerical">סטרופ מספרי</button>
+                <button data-variant="spatial">סטרופ מרחבי</button>
+                <button data-variant="switching">סטרופ עם החלפת משימות</button>
+            </div>
+        </div>
+
+        <!-- 2. אזור המשחק (משותף לכל הגרסאות) -->
+        <div id="gameContainer" class="hidden">
+            <h2 id="variantTitle"></h2>
+
+            <div id="instructionsArea">
+                <h3>הוראות:</h3>
+                <p id="instructionText"></p>
+                <label for="numTrialsSelect">מספר ניסויים:</label>
+                <select id="numTrialsSelect">
+                    <option value="12">12</option>
+                    <option value="20" selected>20</option>
+                    <option value="30">30</option>
+                </select>
+                <button id="startGameButton">התחל בניסוי</button>
+            </div>
+
+            <div id="testArea" class="hidden">
+                <!-- אזור הגירוי - יותאם דינמית -->
+                <div id="stimulusArea">
+                    <div id="cueText"></div>      <!-- For Task Switching -->
+                    <div id="stimulusDisplay"></div> <!-- Main stimulus -->
+                </div>
+
+                <!-- אזור התגובה (כפתורים או הנחיה למקלדת) -->
+                <div id="responseArea"></div>
+                <p id="keyboardInstructions" class="hidden"></p> <!-- Keep for potential future use -->
+
+                <!-- אזור הפידבק -->
+                <div id="feedbackArea" class="feedback-text"></div>
+                <div id="rtDisplay">זמן תגובה: --</div>
+            </div>
+
+             <button id="backToSelectionButton" class="hidden">חזור לבחירת גרסה</button>
+        </div>
+
+
+        <!-- 3. אזור התוצאות (משותף אך יותאם) -->
+        <div id="resultsArea" class="hidden">
+            <h2>תוצאות (<span id="resultsVariantName"></span>)</h2>
+            <div id="resultsSummary">
+                <!-- תוכן התוצאות יוכנס כאן דינמית -->
+            </div>
+             <div id="resultsExplanation" style="font-size: 0.9em; margin-top: 15px; color: #555; background-color: #eef; padding: 10px; border-radius: 4px; text-align: right;"></div>
+            <button id="backToSelectionButtonResults">חזור לבחירת גרסה</button>
+        </div>
+
+    </div>
+
+    <script src="stroop_variants_script.js"></script>
+</body>
+</html>

@@ -225,6 +225,13 @@
       transform: translateY(-2px);
       box-shadow: 0 10px 22px rgba(225, 99, 39, 0.30);
     }
+    .book__cta--soon {
+      background: var(--bgu-gray-light);
+      color: var(--bgu-gray-medium);
+      box-shadow: none;
+      cursor: default;
+    }
+    .book__cta--soon:hover { transform: none; box-shadow: none; }
 
     /* ===================== הערה ===================== */
     .note {
@@ -324,11 +331,9 @@
       <div class="book__icon">📈</div>
       <h2 class="book__title">חשבון דיפרנציאלי ואינטגרלי 1 להנדסה</h2>
       <p class="book__author">יובל חצ׳טריאן-רזיאל</p>
-      <span class="book__badge">טיוטה</span>
+      <span class="book__badge">בקרוב</span>
       <div class="book__spacer"></div>
-      <a class="book__cta" href="https://bguteachingcenter.github.io/BGU-Calculus-Book/" target="_blank" rel="noopener">
-        פתיחת הספר ←
-      </a>
+      <span class="book__cta book__cta--soon">בקרוב</span>
     </article>
 
   </main>

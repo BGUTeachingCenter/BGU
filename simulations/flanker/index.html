@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תחרות פלאנקר</title>
+    <link rel="stylesheet" href="flanker_style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>תחרות פלאנקר (Flanker Task)</h1>
+
+        <div id="setup">
+            <h2>הגדרות משחק</h2>
+            <label for="numTrials">מספר ניסויים לכל שחקן:</label>
+            <select id="numTrials">
+                <option value="6">6 (2 מכל סוג)</option>
+                <option value="12" selected>12 (4 מכל סוג)</option>
+                <option value="18">18 (6 מכל סוג)</option>
+            </select>
+            <button id="startGameButton">התחל משחק</button>
+        </div>
+
+        <div id="gameArea" class="hidden">
+            <h2 id="playerTurn"></h2>
+            <div id="stimulusF" class="stimulus-arrows"></div>
+            <p id="instructionText">לחץ על <strong>חץ ימינה</strong> (→) או <strong>חץ שמאלה</strong> (←) בהתאם לכיוון החץ <strong>המרכזי</strong>.</p>
+             <div id="feedbackF" class="feedback-text"></div>
+        </div>
+
+        <div id="resultsF" class="hidden">
+            <h2>תוצאות סופיות</h2>
+            <div class="player-results">
+                <h3>שחקן 1</h3>
+                <p>זמן תגובה ממוצע (נכון): <span id="p1AvgRT"></span> אלפ' שנ'</p>
+                <p>דיוק כולל: <span id="p1Acc"></span>%</p>
+                <p class="condition-detail">תואם: <span id="p1CongRT"></span> אלפ' שנ' (<span id="p1CongAcc"></span>%)</p>
+                <p class="condition-detail">לא-תואם: <span id="p1IncongRT"></span> אלפ' שנ' (<span id="p1IncongAcc"></span>%)</p>
+                <p class="condition-detail">ניטרלי: <span id="p1NeutRT"></span> אלפ' שנ' (<span id="p1NeutAcc"></span>%)</p>
+            </div>
+             <div class="player-results">
+                <h3>שחקן 2</h3>
+                <p>זמן תגובה ממוצע (נכון): <span id="p2AvgRT"></span> אלפ' שנ'</p>
+                <p>דיוק כולל: <span id="p2Acc"></span>%</p>
+                <p class="condition-detail">תואם: <span id="p2CongRT"></span> אלפ' שנ' (<span id="p2CongAcc"></span>%)</p>
+                <p class="condition-detail">לא-תואם: <span id="p2IncongRT"></span> אלפ' שנ' (<span id="p2IncongAcc"></span>%)</p>
+                <p class="condition-detail">ניטרלי: <span id="p2NeutRT"></span> אלפ' שנ' (<span id="p2NeutAcc"></span>%)</p>
+            </div>
+            <h3 id="winnerDeclaration"></h3>
+            <button id="newGameButton">משחק חדש</button>
+        </div>
+
+    </div>
+
+    <script src="flanker_script.js"></script>
+</body>
+</html>

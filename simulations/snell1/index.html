@@ -1,0 +1,562 @@
+<span style="color: var(--color_primary); font-size: 42px;">חוק סנל, שאלות ואנלוגיה</span>
+<div id="main-container">
+    <h1></h1>
+    <p>הדגמה זו ממחישה את מעבר קרן אור בין שני תווכים עם מקדמי שבירה שונים (n₁ ו-n₂).</p>
+    <p>שנו את זווית הפגיעה (θ₁) ואת מקדמי השבירה באמצעות המחוונים וראו כיצד הזוויות וקרני האור משתנות בדיאגרמה המדויקת ובאנלוגיה הסכמטית.</p>
+
+    <div id="simulation-container">
+        <!-- Controls Column -->
+        <div id="controls">
+            <h2>פרמטרים</h2>
+            <div class="control-group">
+                <label for="angleSlider">זווית פגיעה (θ₁): <span id="angleValue" class="value-display">45</span>°</label>
+                <input type="range" id="angleSlider" min="0" max="89" value="45" step="1">
+            </div>
+            <div class="control-group">
+                <label for="n1Slider">מקדם שבירה 1 (n₁): <span id="n1Value" class="value-display">1.00</span></label>
+                <input type="range" id="n1Slider" min="1.00" max="2.50" value="1.00" step="0.01">
+            </div>
+            <div class="control-group">
+                <label for="n2Slider">מקדם שבירה 2 (n₂): <span id="n2Value" class="value-display">1.50</span></label>
+                <input type="range" id="n2Slider" min="1.00" max="2.50" value="1.50" step="0.01">
+            </div>
+            <div id="output">
+                זווית שבירה (θ₂): <span id="refractionAngle" class="value-display">?</span>°
+            </div>
+            <div id="tir-message"></div>
+        </div>
+
+        <!-- Group for the two canvases -->
+        <div class="canvas-group">
+            <!-- Main Optics Canvas Container -->
+            <div class="canvas-container">
+                <h3>דיאגרמה מדויקת</h3>
+                <canvas id="opticsCanvas" width="400" height="350"></canvas>
+            </div>
+
+            <!-- Analogy Canvas Container -->
+            <div class="canvas-container">
+                <h3>אנלוגיה סכמטית</h3>
+                <canvas id="analogyCanvas" width="250" height="350"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <button id="generateQuestionBtn">צור שאלה חדשה</button>
+
+    <div id="question-section" style="display: none;">
+        <h2>שאלה לבדיקה</h2>
+        <div id="question-text"></div>
+        <div id="answer-options"></div>
+        <div id="feedback-area"></div>
+    </div>
+</div>
+
+<script>
+    // --- DOM Elements ---
+    const opticsCanvas = document.getElementById('opticsCanvas');
+    const opticsCtx = opticsCanvas.getContext('2d');
+    const analogyCanvas = document.getElementById('analogyCanvas');
+    const analogyCtx = analogyCanvas.getContext('2d');
+    // Dimensions will be read dynamically later if needed, using canvas.width/height
+
+    const angleSlider = document.getElementById('angleSlider');
+    const n1Slider = document.getElementById('n1Slider');
+    const n2Slider = document.getElementById('n2Slider');
+    const angleValueSpan = document.getElementById('angleValue');
+    const n1ValueSpan = document.getElementById('n1Value');
+    const n2ValueSpan = document.getElementById('n2Value');
+    const refractionAngleSpan = document.getElementById('refractionAngle');
+    const tirMessageDiv = document.getElementById('tir-message');
+
+    const generateQuestionBtn = document.getElementById('generateQuestionBtn');
+    const questionSection = document.getElementById('question-section');
+    const questionTextDiv = document.getElementById('question-text');
+    const answerOptionsDiv = document.getElementById('answer-options');
+    const feedbackAreaDiv = document.getElementById('feedback-area');
+
+    // --- State Variables ---
+    let currentCorrectAnswer = null;
+    let currentAngle1Rad = 0;
+    let currentN1 = 1.0;
+    let currentN2 = 1.5;
+    let currentAngle2Rad = null;
+    let currentAngle2Deg = null; // Store calculated degrees
+    let isTIR = false;
+    let isAngleHidden = false; // Flag for hidden angle
+
+    // --- Drawing Functions ---
+
+    function drawOpticsDiagram() {
+        const opticsWidth = opticsCanvas.width;
+        const opticsHeight = opticsCanvas.height;
+        const opticsInterfaceY = opticsHeight / 2;
+        const opticsCenterX = opticsWidth / 2;
+
+        opticsCtx.clearRect(0, 0, opticsWidth, opticsHeight);
+        // [...] Drawing logic is the same as before...
+        // Draw interface, labels, normal
+        opticsCtx.beginPath();
+        opticsCtx.moveTo(0, opticsInterfaceY);
+        opticsCtx.lineTo(opticsWidth, opticsInterfaceY);
+        opticsCtx.strokeStyle = '#34495e';
+        opticsCtx.lineWidth = 2;
+        opticsCtx.stroke();
+        opticsCtx.fillStyle = '#555';
+        opticsCtx.font = '14px Arial';
+        opticsCtx.textAlign = 'left';
+        opticsCtx.fillText(`n₁ = ${currentN1.toFixed(2)}`, 10, opticsInterfaceY - 10);
+        opticsCtx.fillText(`n₂ = ${currentN2.toFixed(2)}`, 10, opticsInterfaceY + 20);
+        opticsCtx.beginPath();
+        opticsCtx.setLineDash([5, 5]);
+        opticsCtx.moveTo(opticsCenterX, 0);
+        opticsCtx.lineTo(opticsCenterX, opticsHeight);
+        opticsCtx.strokeStyle = '#bdc3c7';
+        opticsCtx.lineWidth = 1;
+        opticsCtx.stroke();
+        opticsCtx.setLineDash([]);
+
+        // Calculate incident ray
+        const incidentLength = opticsInterfaceY === 0 ? 1 : Math.min(200, opticsInterfaceY / Math.cos(currentAngle1Rad));
+        const incidentX = opticsCenterX - incidentLength * Math.sin(currentAngle1Rad);
+        const incidentY = opticsInterfaceY - incidentLength * Math.cos(currentAngle1Rad);
+
+        // Draw incident ray
+        opticsCtx.beginPath();
+        opticsCtx.moveTo(incidentX, incidentY);
+        opticsCtx.lineTo(opticsCenterX, opticsInterfaceY);
+        opticsCtx.strokeStyle = '#3498db';
+        opticsCtx.lineWidth = 2;
+        opticsCtx.stroke();
+        drawArrowhead(opticsCtx, incidentX, incidentY, opticsCenterX, opticsInterfaceY, '#3498db');
+
+        // Draw reflected ray
+        const reflectedLength = incidentLength;
+        const reflectedX = opticsCenterX + reflectedLength * Math.sin(currentAngle1Rad);
+        const reflectedY = opticsInterfaceY - reflectedLength * Math.cos(currentAngle1Rad);
+        opticsCtx.beginPath();
+        opticsCtx.moveTo(opticsCenterX, opticsInterfaceY);
+        opticsCtx.lineTo(reflectedX, reflectedY);
+        opticsCtx.strokeStyle = '#2ecc71';
+        opticsCtx.lineWidth = 2;
+        opticsCtx.stroke();
+        drawArrowhead(opticsCtx, opticsCenterX, opticsInterfaceY, reflectedX, reflectedY, '#2ecc71');
+
+        // Refraction calculation happens in updateSimulationState
+        if (isTIR) {
+            // Enhance reflected ray for TIR
+            opticsCtx.beginPath();
+            opticsCtx.moveTo(opticsCenterX, opticsInterfaceY);
+            opticsCtx.lineTo(reflectedX, reflectedY);
+            opticsCtx.strokeStyle = '#f1c40f';
+            opticsCtx.lineWidth = 3;
+            opticsCtx.stroke();
+            drawArrowhead(opticsCtx, opticsCenterX, opticsInterfaceY, reflectedX, reflectedY, '#f1c40f');
+        } else if (currentAngle2Rad !== null) {
+            // Draw refracted ray using calculated currentAngle2Rad
+            const refractedLength = (opticsHeight - opticsInterfaceY) === 0 ? 1 : Math.min(200, (opticsHeight - opticsInterfaceY) / Math.cos(currentAngle2Rad));
+            const refractedX = opticsCenterX + refractedLength * Math.sin(currentAngle2Rad);
+            const refractedY = opticsInterfaceY + refractedLength * Math.cos(currentAngle2Rad);
+            opticsCtx.beginPath();
+            opticsCtx.moveTo(opticsCenterX, opticsInterfaceY);
+            opticsCtx.lineTo(refractedX, refractedY);
+            opticsCtx.strokeStyle = '#e74c3c';
+            opticsCtx.lineWidth = 2;
+            opticsCtx.stroke();
+            drawArrowhead(opticsCtx, opticsCenterX, opticsInterfaceY, refractedX, refractedY, '#e74c3c');
+        }
+    }
+
+    function drawAnalogy() {
+        const analogyWidth = analogyCanvas.width;
+        const analogyHeight = analogyCanvas.height;
+        const analogyInterfaceY = analogyHeight / 2;
+
+        analogyCtx.clearRect(0, 0, analogyWidth, analogyHeight);
+        // [...] Drawing logic is the same as before...
+        const medium1Color = '#d6eaff';
+        const medium2Color = '#b0c4de';
+        analogyCtx.fillStyle = medium1Color;
+        analogyCtx.fillRect(0, 0, analogyWidth, analogyInterfaceY);
+        analogyCtx.fillStyle = medium2Color;
+        analogyCtx.fillRect(0, analogyInterfaceY, analogyWidth, analogyHeight - analogyInterfaceY);
+        analogyCtx.beginPath();
+        analogyCtx.moveTo(0, analogyInterfaceY);
+        analogyCtx.lineTo(analogyWidth, analogyInterfaceY);
+        analogyCtx.strokeStyle = '#555';
+        analogyCtx.lineWidth = 1;
+        analogyCtx.stroke();
+        analogyCtx.fillStyle = '#333';
+        analogyCtx.font = '12px Arial';
+        analogyCtx.textAlign = 'center';
+        analogyCtx.fillText(`תווך 1 (n₁=${currentN1.toFixed(2)})`, analogyWidth / 2, 20);
+        analogyCtx.fillText(`תווך 2 (n₂=${currentN2.toFixed(2)})`, analogyWidth / 2, analogyHeight - 10);
+
+        const beamStartX = analogyWidth * 0.2;
+        const beamStartY = 35;
+        const impactX = analogyWidth / 2;
+        const impactY = analogyInterfaceY;
+        analogyCtx.beginPath();
+        analogyCtx.moveTo(beamStartX, beamStartY);
+        analogyCtx.lineTo(impactX, impactY);
+        analogyCtx.strokeStyle = '#3498db';
+        analogyCtx.lineWidth = 3;
+        analogyCtx.stroke();
+        drawArrowhead(analogyCtx, beamStartX, beamStartY, impactX, impactY, '#3498db');
+
+        const reflectedEndX = analogyWidth - beamStartX;
+        const reflectedEndY = beamStartY;
+        analogyCtx.beginPath();
+        analogyCtx.moveTo(impactX, impactY);
+        analogyCtx.lineTo(reflectedEndX, reflectedEndY);
+        analogyCtx.strokeStyle = isTIR ? '#f1c40f' : '#2ecc71';
+        analogyCtx.lineWidth = isTIR ? 4 : 3;
+        analogyCtx.stroke();
+        drawArrowhead(analogyCtx, impactX, impactY, reflectedEndX, reflectedEndY, isTIR ? '#f1c40f' : '#2ecc71');
+
+        if (isTIR) {
+            analogyCtx.fillStyle = '#dc3545';
+            analogyCtx.font = 'bold 14px Arial';
+            analogyCtx.textAlign = 'center';
+            analogyCtx.fillText('החזרה פנימית מלאה!', impactX, impactY + 30);
+        } else if (currentAngle2Rad !== null) {
+            let refractedEndX, refractedEndY;
+            const beamEndY = analogyHeight - 35;
+            if (Math.abs(currentAngle1Rad) < 0.01) {
+                refractedEndX = impactX;
+            } else if (currentN1 < currentN2) {
+                refractedEndX = impactX + (analogyWidth * 0.3);
+            } else {
+                refractedEndX = impactX + (analogyWidth * 0.4);
+            }
+            refractedEndX = Math.max(10, Math.min(analogyWidth - 10, refractedEndX));
+            refractedEndY = beamEndY;
+            analogyCtx.beginPath();
+            analogyCtx.moveTo(impactX, impactY);
+            analogyCtx.lineTo(refractedEndX, refractedEndY);
+            analogyCtx.strokeStyle = '#e74c3c';
+            analogyCtx.lineWidth = 3;
+            analogyCtx.stroke();
+            drawArrowhead(analogyCtx, impactX, impactY, refractedEndX, refractedEndY, '#e74c3c');
+            analogyCtx.fillStyle = '#555';
+            analogyCtx.font = '12px Arial';
+            analogyCtx.textAlign = 'center';
+            let bendingText = "";
+            if (Math.abs(currentAngle1Rad) > 0.01) {
+                if (currentN1 < currentN2) bendingText = "נשבר קרוב לנורמל";
+                else if (currentN1 > currentN2) bendingText = "נשבר רחוק מהנורמל";
+                else bendingText = "ממשיך ישר";
+            }
+            analogyCtx.fillText(bendingText, impactX, impactY + 30);
+        }
+    }
+
+    function drawArrowhead(ctx, fromX, fromY, toX, toY, color) {
+        // [...] Helper function unchanged
+        const headlen = 10;
+        const dx = toX - fromX;
+        const dy = toY - fromY;
+        if (dx === 0 && dy === 0) return;
+        const angle = Math.atan2(dy, dx);
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = ctx.lineWidth;
+        ctx.beginPath();
+        ctx.moveTo(toX, toY);
+        ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    }
+
+    // --- Simulation State Update ---
+    function updateSimulationState() {
+        const angle1_deg = parseFloat(angleSlider.value);
+        currentN1 = parseFloat(n1Slider.value);
+        currentN2 = parseFloat(n2Slider.value);
+        currentAngle1Rad = angle1_deg * Math.PI / 180;
+
+        // Update displayed values (except angle2 initially)
+        angleValueSpan.textContent = angle1_deg.toFixed(0);
+        n1ValueSpan.textContent = currentN1.toFixed(2);
+        n2ValueSpan.textContent = currentN2.toFixed(2);
+
+        // Calculate refraction
+        const sin_angle2 = (currentN1 / currentN2) * Math.sin(currentAngle1Rad);
+        tirMessageDiv.textContent = ''; // Clear TIR message initially
+        currentAngle2Rad = null;
+        currentAngle2Deg = null;
+        isTIR = false;
+
+        if (currentN1 > currentN2 && Math.abs(sin_angle2) > 1) {
+            isTIR = true;
+            tirMessageDiv.textContent = 'החזרה פנימית מלאה!';
+            currentAngle2Deg = null; // No refraction angle
+        } else if (Math.abs(sin_angle2) <= 1) {
+            currentAngle2Rad = Math.asin(sin_angle2);
+            currentAngle2Deg = currentAngle2Rad * 180 / Math.PI;
+        } else {
+            currentAngle2Deg = null; // Error case
+        }
+
+        // Update Angle 2 display ONLY if not hidden by question
+        updateAngleDisplay();
+    }
+
+    function updateAngleDisplay() {
+        if (isAngleHidden) {
+            refractionAngleSpan.textContent = "?";
+            refractionAngleSpan.classList.add('angle-hidden');
+        } else {
+            refractionAngleSpan.classList.remove('angle-hidden');
+            if (isTIR) {
+                refractionAngleSpan.textContent = "---";
+            } else if (currentAngle2Deg !== null) {
+                refractionAngleSpan.textContent = currentAngle2Deg.toFixed(1);
+            } else {
+                refractionAngleSpan.textContent = "שגיאה";
+            }
+        }
+    }
+
+    // --- Question Generation Logic (Modified) ---
+    function generateQuestion() {
+        questionSection.style.display = 'block';
+        feedbackAreaDiv.textContent = '';
+        feedbackAreaDiv.className = '';
+        answerOptionsDiv.innerHTML = '';
+        isAngleHidden = false; // Reset hidden flag by default
+
+        const angle1_deg = parseFloat(angleSlider.value);
+        // Use state variables: n1, n2, angle1_rad, angle2_rad, angle2_deg, tir_occurs
+        const n1 = currentN1;
+        const n2 = currentN2;
+        const angle1_rad = currentAngle1Rad;
+        const angle2_rad = currentAngle2Rad;
+        const angle2_deg = currentAngle2Deg;
+        const tir_occurs = isTIR;
+
+        const questionTypes = [];
+
+        // Question Type 1: Calculate Refraction Angle (if not TIR)
+        // **MODIFIED**: Only add this type if angle2 is calculable AND *hide* the display
+        if (!tir_occurs && angle2_deg !== null) {
+            questionTypes.push(() => {
+                isAngleHidden = true; // <<< HIDE the angle display
+                updateAngleDisplay(); // Update display to show "?"
+                const correctAnswer = angle2_deg.toFixed(1);
+                const options = generateOptions(correctAnswer, 3, 0.5, 15, 1);
+                return {
+                    text: `בהינתן זווית פגיעה θ₁ = ${angle1_deg.toFixed(0)}°, n₁ = ${n1.toFixed(2)}, ו- n₂ = ${n2.toFixed(2)}, מהי זווית השבירה θ₂ (במעלות)? (הערך הוסתר מהתצוגה)`, // Added note
+                    options: options,
+                    correct: correctAnswer,
+                    restoreDisplay: true // Flag to restore display after answer
+                };
+            });
+        }
+
+        // Question Type 2: Predict TIR occurrence (Unchanged logic, doesn't rely on displayed angle2)
+        if (n1 > n2) {
+            questionTypes.push(() => {
+                // [...] same as before
+                const criticalAngleRad = Math.asin(n2 / n1);
+                const criticalAngleDeg = (criticalAngleRad * 180 / Math.PI).toFixed(1);
+                const correctAnswer = tir_occurs ? "כן" : "לא";
+                const options = ["כן", "לא", "רק אם θ₁ > 90°"];
+                shuffleArray(options);
+                return {
+                    text: `בהינתן n₁ = ${n1.toFixed(2)}, n₂ = ${n2.toFixed(2)}, וזווית פגיעה θ₁ = ${angle1_deg.toFixed(0)}°, האם תתרחש החזרה פנימית מלאה? (הזווית הקריטית היא כ-${criticalAngleDeg}°).`,
+                    options: options,
+                    correct: correctAnswer,
+                    restoreDisplay: false // No need to restore display
+                };
+            });
+        }
+
+        // Question Type 3: Compare n1 and n2 based on bending (Unchanged logic)
+        if (!tir_occurs && angle2_rad !== null && Math.abs(angle1_rad) > 0.01) {
+            questionTypes.push(() => {
+                // [...] same as before
+                let correctAnswer;
+                let relationText;
+                let comparisonAngle = Math.abs(angle2_rad).toFixed(3);
+                let incidentAngle = Math.abs(angle1_rad).toFixed(3);
+                if (comparisonAngle < incidentAngle) {
+                    correctAnswer = "n₂ > n₁";
+                    relationText = "הקרן נשברת קרוב יותר לנורמל";
+                } else if (comparisonAngle > incidentAngle) {
+                    correctAnswer = "n₁ > n₂";
+                    relationText = "הקרן נשברת רחוק יותר מהנורמל";
+                } else {
+                    correctAnswer = "n₁ = n₂";
+                    relationText = "הקרן ממשיכה ישר";
+                }
+                const options = ["n₁ > n₂", "n₂ > n₁", "n₁ = n₂", "תלוי בזווית הפגיעה"];
+                shuffleArray(options);
+                return {
+                    text: `במצב הנוכחי, ${relationText}. מה ניתן להסיק על מקדמי השבירה?`,
+                    options: options,
+                    correct: correctAnswer,
+                    restoreDisplay: false
+                };
+            });
+        }
+
+        // Question Type 4: What happens if angle1 increases? (Unchanged logic)
+        questionTypes.push(() => {
+            // [...] same as before
+            let correctAnswer;
+            let qText = `במצב הנוכחי (n₁=${n1.toFixed(2)}, n₂=${n2.toFixed(2)}), מה יקרה לזווית השבירה θ₂ אם נגדיל *מעט* את זווית הפגיעה θ₁ = ${angle1_deg.toFixed(0)}°?`;
+            let options = ["תגדל", "תקטן", "תישאר זהה", "תתרחש החזרה פנימית מלאה"];
+            if (tir_occurs) {
+                correctAnswer = "תישאר במצב החזרה מלאה";
+                qText = `במצב הנוכחי (...) מתרחשת החזרה פנימית מלאה. מה יקרה אם נגדיל *עוד* את זווית הפגיעה θ₁?`;
+                options = ["תישאר במצב החזרה מלאה", "תתרחש שבירה", "עוצמת ההחזרה תקטן", "לא ניתן לדעת"];
+            } else if (n1 > n2) {
+                const criticalAngleRad = Math.asin(n2 / n1);
+                if (angle1_rad + 0.1 * Math.PI / 180 > criticalAngleRad) {
+                    correctAnswer = "תתרחש החזרה פנימית מלאה";
+                } else if (angle2_rad !== null) {
+                    correctAnswer = "תגדל";
+                } else {
+                    correctAnswer = "תגדל";
+                }
+            } else if (n1 <= n2 && angle2_rad !== null) {
+                correctAnswer = "תגדל";
+                options = ["תגדל", "תקטן", "תישאר זהה", "n₁ ישתנה"];
+            } else {
+                correctAnswer = options[0];
+            }
+            shuffleArray(options);
+            return {
+                text: qText,
+                options: options,
+                correct: correctAnswer,
+                restoreDisplay: false
+            };
+        });
+
+
+        // Choose a random question type
+        if (questionTypes.length > 0) {
+            const randomIndex = Math.floor(Math.random() * questionTypes.length);
+            const questionData = questionTypes[randomIndex](); // Execute the chosen function
+
+            questionTextDiv.textContent = questionData.text;
+            currentCorrectAnswer = questionData.correct;
+            // Store whether to restore display after answer
+            const shouldRestoreDisplay = questionData.restoreDisplay;
+
+            // Create answer buttons
+            questionData.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                // Pass shouldRestoreDisplay flag to checkAnswer
+                button.onclick = () => checkAnswer(option, button, shouldRestoreDisplay);
+                answerOptionsDiv.appendChild(button);
+            });
+        } else {
+            // Fallback if no questions could be generated
+            questionTextDiv.textContent = "לא ניתן ליצור שאלה עבור הפרמטרים הנוכחיים. נסו לשנות את הערכים.";
+            currentCorrectAnswer = null;
+            isAngleHidden = false; // Ensure angle display is not hidden
+            updateAngleDisplay();
+        }
+    }
+
+    // Modified checkAnswer to handle restoring the display
+    function checkAnswer(selectedAnswer, selectedButton, restoreDisplay) {
+        if (currentCorrectAnswer === null) return;
+
+        // [...] Feedback logic remains the same...
+        const buttons = answerOptionsDiv.getElementsByTagName('button');
+        let isCorrect = String(selectedAnswer) === String(currentCorrectAnswer);
+        if (isCorrect) {
+            feedbackAreaDiv.textContent = "נכון! תשובה מצוינת!";
+            feedbackAreaDiv.className = 'correct';
+            selectedButton.classList.add('correct');
+        } else {
+            feedbackAreaDiv.innerHTML = `לא נכון. התשובה הנכונה היא: <strong>${currentCorrectAnswer}</strong>`;
+            feedbackAreaDiv.className = 'incorrect';
+            selectedButton.classList.add('incorrect');
+        }
+        for (let btn of buttons) {
+            btn.disabled = true;
+            if (!isCorrect && btn.textContent === currentCorrectAnswer) {
+                btn.classList.add('correct');
+            } else if (btn !== selectedButton) {
+                btn.classList.add('disabled-other');
+            }
+        }
+
+        // Restore angle display if needed
+        if (restoreDisplay) {
+            isAngleHidden = false;
+            updateAngleDisplay();
+        }
+    }
+
+    // --- Helper Functions (Unchanged) ---
+    function generateOptions(correctAnswer, numDistractors, minDeviation, maxDeviation, decimalPlaces) {
+        /* ... same as before ... */
+        const options = [correctAnswer];
+        const correctValue = parseFloat(correctAnswer);
+        let attempts = 0;
+        numDistractors = Math.max(1, Math.min(4, numDistractors));
+        while (options.length < numDistractors + 1 && attempts < 20) {
+            let deviation = Math.random() * (maxDeviation - minDeviation) + minDeviation;
+            deviation = Math.max(0.1, deviation);
+            const sign = Math.random() < 0.5 ? -1 : 1;
+            let distractorValue = correctValue + sign * deviation;
+            if (correctValue >= 0 && correctValue <= 90) {
+                distractorValue = Math.max(0, Math.min(90, distractorValue));
+            }
+            const distractor = distractorValue.toFixed(decimalPlaces);
+            const distractorNum = parseFloat(distractor);
+            let exists = options.some(opt => parseFloat(opt).toFixed(decimalPlaces) === distractor);
+            if (!exists && Math.abs(distractorNum - correctValue) > 0.05) {
+                options.push(distractor);
+            }
+            attempts++;
+        }
+        while (options.length < numDistractors + 1) {
+            let randomVal;
+            if (correctValue >= 0 && correctValue <= 90) {
+                randomVal = Math.random() * 90;
+            } else {
+                randomVal = correctValue + (Math.random() - 0.5) * 40;
+            }
+            const randomOpt = randomVal.toFixed(decimalPlaces);
+            if (!options.some(opt => parseFloat(opt).toFixed(decimalPlaces) === randomOpt)) {
+                options.push(randomOpt);
+            }
+        }
+        shuffleArray(options);
+        return options.slice(0, numDistractors + 1);
+    }
+
+    function shuffleArray(array) {
+        /* ... same as before ... */
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    // --- Initialization and Event Listeners ---
+    function redrawAll() {
+        updateSimulationState(); // Calculate state first
+        drawOpticsDiagram(); // Draw based on state
+        drawAnalogy(); // Draw based on state
+    }
+
+    angleSlider.addEventListener('input', redrawAll);
+    n1Slider.addEventListener('input', redrawAll);
+    n2Slider.addEventListener('input', redrawAll);
+    generateQuestionBtn.addEventListener('click', generateQuestion);
+
+    // Initial setup
+    redrawAll();
+</script>

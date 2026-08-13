@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-EZ4EEMW6C2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-EZ4EEMW6C2');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
+
+  <title>בינה מלאכותית בהוראה - אוניברסיטת בן גוריון בנגב</title>
+
+  <meta property="og:title" content="בינה מלאכותית בהוראה - אוניברסיטת בן גוריון בנגב">
+  <meta property="og:description" content="אוסף משחקים, סימולציות ובוטים מבוססי בינה מלאכותית מבית היחידה לקידום איכות ההוראה והלמידה, אוניברסיטת בן גוריון בנגב.">
+  <meta property="og:url" content="https://bguteachingcenter.github.io/BGU/simulations/">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://bguteachingcenter.github.io/BGU/logo.png">
+
+  <style>
+    :root {
+      /* ===== צבעים ראשיים (שפת המותג) ===== */
+      --bgu-orange:        #f7941e;
+      --bgu-orange-deep:   #e16327;
+      --bgu-orange-tint:   #fde8cf;
+      --bgu-gray-dark:     #58595b;
+      --bgu-gray-medium:   #828487;
+      --bgu-gray-light:    #cfd6da;
+      --bgu-text:          #333333;
+
+      --bgu-gradient-1: linear-gradient(135deg, #e16327 0%, #f7941e 100%);
+
+      --bgu-font: "Open Sans", "Assistant", "Arial", sans-serif;
+
+      --bg: #fbfaf8;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: var(--bgu-font);
+      direction: rtl;
+      background-color: var(--bg);
+      color: var(--bgu-text);
+      margin: 0;
+      padding: 0 0 20px;
+      overflow-x: hidden;
+    }
+
+    a:focus-visible {
+      outline: 3px solid var(--bgu-orange);
+      outline-offset: 3px;
+      border-radius: 8px;
+    }
+
+    /* ===================== HERO ===================== */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 56px 24px 46px;
+      text-align: center;
+    }
+
+    /* מוטיב האלכסון - שכבות מקביליות מסביב לכותרת */
+    .hero__deco { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+    .hero__deco span { position: absolute; display: block; }
+    .deco-1 { width: 200px; height: 380px; top: -90px; right: -50px;
+              background: var(--bgu-orange); opacity: .13;
+              clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%); }
+    .deco-2 { width: 150px; height: 320px; top: -60px; right: 90px;
+              background: var(--bgu-gray-medium); opacity: .10;
+              clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%); }
+    .deco-3 { width: 170px; height: 340px; top: -70px; left: -50px;
+              background: var(--bgu-orange); opacity: .11;
+              clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%); }
+    .deco-4 { width: 120px; height: 280px; top: -40px; left: 90px;
+              background: var(--bgu-gray-light); opacity: .28;
+              clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%); }
+
+    .hero > * { position: relative; z-index: 1; }
+
+    .hero__logo {
+      width: min(330px, 58%);
+      height: auto;
+      margin: 0 auto 10px;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    .hero__logo:hover { transform: scale(1.04); }
+
+    .hero__eyebrow {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      color: var(--bgu-orange-deep);
+      margin: 4px 0 12px;
+    }
+
+    .hero__title {
+      font-size: clamp(26px, 4.2vw, 40px);
+      font-weight: 800;
+      color: var(--bgu-text);
+      line-height: 1.15;
+      margin: 0 auto 12px;
+      max-width: 760px;
+    }
+
+    .hero__sub {
+      font-size: clamp(16px, 2.2vw, 19px);
+      font-weight: 400;
+      color: var(--bgu-gray-medium);
+      max-width: 620px;
+      margin: 0 auto 16px;
+      line-height: 1.5;
+    }
+
+    .backhome {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--bgu-orange-deep);
+      text-decoration: none;
+    }
+    .backhome:hover { text-decoration: underline; }
+
+    /* המוטו - מחזק את הכותרת, מרוחק מהלוגו */
+    .hero__motto {
+      display: inline-block;
+      font-size: clamp(17px, 2.4vw, 22px);
+      font-weight: 700;
+      color: var(--bgu-orange-deep);
+    }
+    .hero__motto::before {
+      content: "";
+      display: inline-block;
+      width: 26px; height: 12px;
+      margin-left: 10px;
+      vertical-align: middle;
+      background: var(--bgu-gradient-1);
+      clip-path: polygon(30% 0, 100% 0, 70% 100%, 0 100%);
+    }
+
+    /* ===================== כפתורים בולטים ===================== */
+    .actions {
+      max-width: 920px;
+      margin: 34px auto 0;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .feature {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 26px;
+      border-radius: 16px;
+      text-decoration: none;
+      text-align: right;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .feature::after { /* פס אלכסוני עדין - מוטיב הפרספקטיבה */
+      content: "";
+      position: absolute;
+      top: 0; bottom: 0; left: -12px;
+      width: 74px;
+      background: rgba(255, 255, 255, 0.10);
+      clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%);
+      pointer-events: none;
+    }
+    .feature--primary {
+      background: var(--bgu-gradient-1);
+      color: #fff;
+      box-shadow: 0 8px 22px rgba(225, 99, 39, 0.25);
+    }
+    .feature--secondary {
+      background: var(--bgu-gray-dark);
+      color: #fff;
+      box-shadow: 0 8px 22px rgba(88, 89, 91, 0.22);
+    }
+    .feature:hover { transform: translateY(-4px); }
+    .feature--primary:hover  { box-shadow: 0 12px 28px rgba(225, 99, 39, 0.33); }
+    .feature--secondary:hover{ box-shadow: 0 12px 28px rgba(88, 89, 91, 0.30); }
+
+    .feature__icon { font-size: 34px; flex: 0 0 auto; line-height: 1; }
+    .feature__text { display: flex; flex-direction: column; }
+    .feature__title { font-size: 21px; font-weight: 800; line-height: 1.15; }
+    .feature__desc  { font-size: 14px; font-weight: 400; opacity: 0.92; margin-top: 4px; }
+
+    /* ===================== רשת הקטגוריות ===================== */
+    .grid {
+      max-width: 1040px;
+      margin: 40px auto 0;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+    /* כל טור הוא ערימת כרטיסיות עצמאית וצמודה */
+    .grid__col {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #eee;
+      border-radius: 18px;
+      padding: 26px 20px 22px;
+      box-shadow: 0 6px 18px rgba(88, 89, 91, 0.07);
+    }
+
+    .card__title {
+      position: relative;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--bgu-text);
+      padding-bottom: 16px;
+      margin: 0 0 16px;
+    }
+    .card__title::after { /* קו הדגשה אלכסוני */
+      content: "";
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 58px; height: 5px;
+      background: var(--bgu-gradient-1);
+      clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+    }
+
+    .link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      margin: 10px 0;
+      background: #ffffff;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--bgu-text);
+      font-weight: 700;
+      font-size: 17px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease,
+                  border-color 0.2s ease, background 0.2s ease;
+      box-shadow: 0 2px 6px rgba(88, 89, 91, 0.04);
+    }
+    .link:hover {
+      transform: translateY(-2px);
+      border-color: var(--bgu-orange);
+      background: #fffdf9;
+      box-shadow: 0 6px 16px rgba(247, 148, 30, 0.18);
+    }
+
+    /* צ'יפ אייקון בצורת מקבילית - מוטיב האלכסון בזעיר-אנפין */
+    .link__chip {
+      position: relative;
+      flex: 0 0 auto;
+      width: 48px; height: 44px;
+      display: grid;
+      place-items: center;
+    }
+    .link__chip::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--bgu-orange-tint);
+      clip-path: polygon(22% 0, 100% 0, 78% 100%, 0 100%);
+      transition: background 0.2s ease;
+      z-index: 0;
+    }
+    .link:hover .link__chip::before { background: var(--bgu-orange); }
+    .link__chip > span {
+      position: relative;
+      z-index: 1;
+      font-size: 23px;
+      line-height: 1;
+    }
+
+    .link__label { display: flex; flex-direction: column; }
+    .link__desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--bgu-gray-medium);
+      margin-top: 3px;
+    }
+
+    /* ===================== פוטר ===================== */
+    footer {
+      margin-top: 50px;
+      padding: 24px;
+      text-align: center;
+      color: var(--bgu-gray-medium);
+      font-size: 14px;
+      border-top: 1px solid var(--bgu-gray-light);
+    }
+
+    /* ===================== רספונסיביות ===================== */
+    @media (max-width: 700px) {
+      .actions { grid-template-columns: 1fr; }
+      .deco-2, .deco-4 { display: none; }
+      .hero { padding: 40px 18px 36px; }
+    }
+
+    /* ===================== אנימציה עדינה ===================== */
+    @media (prefers-reduced-motion: no-preference) {
+      .hero__logo, .hero__eyebrow, .hero__title,
+      .hero__sub, .hero__motto, .actions {
+        animation: fadeUp 0.7s ease both;
+      }
+      .hero__eyebrow { animation-delay: 0.05s; }
+      .hero__title   { animation-delay: 0.10s; }
+      .hero__sub     { animation-delay: 0.18s; }
+      .hero__motto   { animation-delay: 0.26s; }
+      .actions       { animation-delay: 0.32s; }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================== HERO ===================== -->
+  <header class="hero">
+    <div class="hero__deco" aria-hidden="true">
+      <span class="deco-1"></span>
+      <span class="deco-2"></span>
+      <span class="deco-3"></span>
+      <span class="deco-4"></span>
+    </div>
+
+    <a href="https://www.bgu.ac.il/u/academic-affairs/academicdev/" target="_blank">
+      <img src="../logo.png" alt="לוגו אוניברסיטת בן-גוריון בנגב" class="hero__logo">
+    </a>
+
+    <p class="hero__eyebrow">היחידה לקידום איכות ההוראה והלמידה · אוניברסיטת בן-גוריון בנגב</p>
+
+    <h1 class="hero__title">אוסף הסימולציות, המשחקים והבוטים</h1>
+
+    <p class="hero__sub">
+      כלים אינטראקטיביים מבוססי בינה מלאכותית להוראה וללמידה
+    </p>
+
+    <a href="../" class="backhome">→ חזרה לעמוד הבית</a>
+
+  </header>
+
+  <!-- ===================== רשת הקטגוריות ===================== -->
+  <main class="grid">
+
+    <!-- טור 1 (ימין): דפים אינטראקטיביים + סימולציות -->
+    <div class="grid__col">
+    <section class="card">
+      <h2 class="card__title">💡 דפים אינטראקטיביים</h2>
+      <a class="link" href="https://claude.ai/public/artifacts/e43c7bc6-ccb4-4986-8cce-fd54919df2f9">
+        <span class="link__chip"><span>📖</span></span>
+        <span class="link__label">שפינוזה</span>
+      </a>
+    </section>
+
+    <section class="card">
+      <h2 class="card__title">🔬 סימולציות</h2>
+      <a class="link" href="multitasking-balloons.html">
+        <span class="link__chip"><span>🎈</span></span>
+        <span class="link__label">מולטיטאקינג - אשליה או מציאות?</span>
+      </a>
+      <a class="link" href="snell1/">
+        <span class="link__chip"><span>🔍</span></span>
+        <span class="link__label">חוק סנל - תיאוריה</span>
+      </a>
+      <a class="link" href="pendulum/">
+        <span class="link__chip"><span>🕰️</span></span>
+        <span class="link__label">פונקציית תמסורת מסדר שני</span>
+      </a>
+      <a class="link" href="biology/">
+        <span class="link__chip"><span>🧫</span></span>
+        <span class="link__label">גידול חיידקים</span>
+      </a>
+    </section>
+    </div>
+
+    <!-- טור 2 (אמצע): משחקים -->
+    <div class="grid__col">
+    <section class="card">
+      <h2 class="card__title">🎮 משחקים</h2>
+      <a class="link" href="syllogism1/">
+        <span class="link__chip"><span>🧩</span></span>
+        <span class="link__label">מבוך ההסקים 1</span>
+      </a>
+      <a class="link" href="syllogism2/">
+        <span class="link__chip"><span>🏛️</span></span>
+        <span class="link__label">מבוך ההסקים 2 - גרסת הפילוסופים</span>
+      </a>
+      <a class="link" href="investments/">
+        <span class="link__chip"><span>📈</span></span>
+        <span class="link__label">משחק ההשקעות</span>
+      </a>
+      <a class="link" href="stroop/">
+        <span class="link__chip"><span>🎨</span></span>
+        <span class="link__label">מבחן סטרופ</span>
+      </a>
+      <a class="link" href="flanker/">
+        <span class="link__chip"><span>🎯</span></span>
+        <span class="link__label">תחרות פלאנקר</span>
+      </a>
+      <a class="link" href="prisoner/">
+        <span class="link__chip"><span>🚔</span></span>
+        <span class="link__label">דילמת האסיר</span>
+      </a>
+      <a class="link" href="snell2/">
+        <span class="link__chip"><span>🏊</span></span>
+        <span class="link__label">חוק סנל - משחק המצילים</span>
+      </a>
+    </section>
+    </div>
+
+    <!-- טור 3 (שמאל): בוטים ללמידה + משחקי תפקידים -->
+    <div class="grid__col">
+    <section class="card">
+      <h2 class="card__title">📖 בוטים ללמידה</h2>
+      <a class="link" href="https://chatgpt.com/g/g-6834645ece2c8191873a27515e2b0f96-svtsyv-ryyt" target="_blank">
+        <span class="link__chip"><span>✍️</span></span>
+        <span class="link__label">סוציו-רייט - שיפור כתיבה</span>
+      </a>
+      <a class="link" href="https://chatgpt.com/g/g-67f77ae5b5788191b49e5fd18da446f0-ktybh-qdmyt-myzvg-r-yvnvt-d-r-y-l-lyn" target="_blank">
+        <span class="link__chip"><span>🧠</span></span>
+        <span class="link__label">כתיבה אקדמית: מיזוג רעיונות</span>
+      </a>
+      <a class="link" href="flashcards/">
+        <span class="link__chip"><span>📑</span></span>
+        <span class="link__label">מחולל כרטיסיות שינון</span>
+      </a>
+    </section>
+
+    <section class="card">
+      <h2 class="card__title">🎭 משחקי תפקידים</h2>
+      <a class="link" href="https://chatgpt.com/g/g-6831913efa1c8191b24341a0c4455ccd-dy-bvt" target="_blank">
+        <span class="link__chip"><span>🗣️</span></span>
+        <span class="link__label">הדיבוט - אימון דיבייטים</span>
+      </a>
+      <a class="link" href="https://chatgpt.com/g/g-67ea6551f1488191bcdb892d610fe23b-symvltvr-shl-dylmvt-pdgvgyvt" target="_blank">
+        <span class="link__chip"><span>📚</span></span>
+        <span class="link__label">סימולטור דילמות פדגוגיות</span>
+      </a>
+    </section>
+    </div>
+
+    <!-- ====== קטגוריה מוסתרת (מוכנה להפעלה בעתיד): למידה מרחוק בתמיכת AI ======
+    <section class="card">
+      <h2 class="card__title">🌐 למידה מרחוק בתמיכת AI</h2>
+      <a class="link" href="#">
+        <span class="link__chip"><span>🎧</span></span>
+        <span class="link__label">הפודקאסט של הקורס (NotebookLM)
+          <span class="link__desc">הפיכת מאמרי הקורס לשיחה קולית מרתקת לסטודנטים.</span>
+        </span>
+      </a>
+      <a class="link" href="#">
+        <span class="link__chip"><span>🎯</span></span>
+        <span class="link__label">מחולל מחוונים (Rubrics)
+          <span class="link__desc">יצירת קריטריונים ברורים להערכה בשיעורי זום ומטלות בית.</span>
+        </span>
+      </a>
+      <a class="link" href="#">
+        <span class="link__chip"><span>💡</span></span>
+        <span class="link__label">מפצח המושגים
+          <span class="link__desc">שימוש ב-AI ליצירת אנלוגיות למושגים מורכבים בלמידה עצמית.</span>
+        </span>
+      </a>
+    </section>
+    ====== סוף קטגוריה מוסתרת ====== -->
+
+  </main>
+
+  <footer>
+    <span class="hero__motto">כשמשנים פרספקטיבה, מגלים עולמות.</span>
+    © היחידה לקידום איכות ההוראה והלמידה | אוניברסיטת בן גוריון בנגב, 2026
+  </footer>
+
+</body>
+</html>

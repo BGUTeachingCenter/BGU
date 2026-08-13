@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מבוך ההיסקים (גרסת הפילוסופים)</title>
+    <!-- Include D3.js and the venn.js library from a CDN -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/venn.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #1c1e21;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            line-height: 1.6;
+        }
+        #game-container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 700px;
+            padding: 24px;
+            text-align: center;
+        }
+        h1 {
+            color: #0d3b66;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+        }
+        #premises-container {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-size: 1.2em;
+        }
+        .premise {
+            margin-bottom: 10px;
+        }
+        #options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .option-btn {
+            background-color: #faf0e6;
+            color: #333;
+            border: 2px solid #d3c0b3;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            width: 100%;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #eaddd7;
+            transform: translateY(-2px);
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        #feedback-container {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 8px;
+            display: none; /* Hidden by default */
+        }
+        .feedback-text {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        #venn-diagram {
+            margin: 0 auto;
+        }
+        .control-button {
+            margin-top: 20px;
+            background-color: #0d3b66;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none; /* Hidden initially */
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1 id="stage-title">מבוך ההיסקים</h1>
+    <div id="premises-container"></div>
+    <div id="options-container"></div>
+    <div id="feedback-container">
+        <div class="feedback-text"></div>
+        <div id="venn-diagram"></div>
+    </div>
+    <button id="continue-button" class="control-button">המשך לשלב הבא</button>
+    <button id="restart-button" class="control-button" onclick="init()">שחק/י שוב!</button>
+</div>
+
+<script>
+    const mazeData = [
+        {
+            id: 'start',
+            title: 'מבוך ההיסקים (גרסת הפילוסופים)',
+            premises: [
+                'ברוכים הבאים! לפניכם מבוך של טיעונים לוגיים מעולם הפילוסופיה (ועולמות סמוכים).',
+                'בכל שלב, עליכם לבחור במסקנה היחידה הנובעת *בהכרח* מההנחות. בהצלחה!'
+            ],
+            options: [
+                { text: 'הבנתי, אתגרו אותי!', isCorrect: true, nextStage: 1 }
+            ]
+        },
+        {
+            id: 1,
+            title: 'שלב 1: מבחן הרכב המשומש',
+            premises: [
+                'הנחה א\': כל האמפיריציסטים סומכים רק על מה שהם רואים.',
+                'הנחה ב\': אף אמפיריציסט אינו קונה רכב משומש בטלפון.'
+            ],
+            options: [
+                { text: 'מסקנה: לכן, כל מי שקונה רכב משומש בטלפון אינו אמפיריציסט.', isCorrect: true, nextStage: 2 },
+                { text: 'מסקנה: לכן, חלק מהאמפיריציסטים קונים רכב משומש באופן אישי.', isCorrect: false, feedback: 'לא נכון. המסקנה הזו הגיונית, אך אינה נובעת *בהכרח* מההנחות. לא נאמר לנו דבר על קנייה אישית.' },
+                { text: 'מסקנה: לכן, אם מישהו לא סומך רק על מה שהוא רואה, הוא יקנה רכב בטלפון.', isCorrect: false, feedback: 'לא נכון. זוהי טעות לוגית של "הכחשת הרישא".' }
+            ],
+            vennData: [{ sets: ['סומכים על הראייה'], size: 12 }, { sets: ['קונים רכב בטלפון'], size: 8 }, { sets: ['אמפיריציסטים'], size: 4 }, { sets: ['סומכים על הראייה', 'אמפיריציסטים'], size: 4 }]
+        },
+        {
+            id: 2,
+            title: 'שלב 2: סודות הסטואה',
+            premises: [
+                'הנחה א\': חלק מהסטואיקנים נראים חסרי רגשות.',
+                'הנחה ב\': כל מי שנראה חסר רגשות הוא שומר מצוין על סודות.'
+            ],
+            options: [
+                { text: 'מסקנה: לכן, כל שומרי הסודות הם סטואיקנים.', isCorrect: false, feedback: 'לא נכון. ייתכנו שומרי סודות שאינם סטואיקנים ואינם נראים חסרי רגשות.' },
+                { text: 'מסקנה: לכן, חלק מהסטואיקנים הם שומרים מצוינים על סודות.', isCorrect: true, nextStage: 3 },
+                { text: 'מסקנה: לכן, חלק משומרי הסודות אינם סטואיקנים.', isCorrect: false, feedback: 'לא נכון. מסקנה זו אינה נובעת מההנחות הנתונות.' }
+            ],
+            vennData: [{ sets: ['שומרי סודות'], size: 12 }, { sets: ['נראים חסרי רגשות'], size: 8 }, { sets: ['סטואיקנים'], size: 8 }, { sets: ['שומרי סודות', 'נראים חסרי רגשות'], size: 8 }, { sets: ['נראים חסרי רגשות', 'סטואיקנים'], size: 2 }]
+        },
+        {
+            id: 3,
+            title: 'שלב 3: אני חושב, משמע...',
+            premises: [
+                'הנחה א\': אם דקארט מטיל ספק, אז הוא קיים.',
+                'הנחה ב\': דקארט מטיל ספק.'
+            ],
+            options: [
+                { text: 'מסקנה: לכן, דקארט קיים.', isCorrect: true, nextStage: 4 },
+                { text: 'מסקנה: לכן, אם דקארט קיים, אז הוא מטיל ספק.', isCorrect: false, feedback: 'לא נכון. זוהי טעות לוגית של "אישור הסוגר". קיומו לא מחייב הטלת ספק.' },
+                { text: 'מסקנה: לכן, אם דקארט אינו קיים, הוא אינו מטיל ספק.', isCorrect: false, feedback: 'זו מסקנה נכונה לוגית (Modus Tollens), אבל היא לא מה שנובע ישירות מההנחות הנתונות.' }
+            ]
+        },
+        {
+            id: 4,
+            title: 'שלב 4: רשימת קניות פוסטמודרנית',
+            premises: [
+                'הנחה א\': כל הפוסטמודרניסטים חושבים שהכל טקסט.',
+                'הנחה ב\': רשימת הקניות שלי היא טקסט.'
+            ],
+            options: [
+                { text: 'מסקנה: לכן, רשימת הקניות שלי היא פוסטמודרניסטית.', isCorrect: false, feedback: 'בהחלט לא! זוהי טעות לוגית קלאסית. רק בגלל ששתי קבוצות חולקות תכונה אחת (היותן טקסט), זה לא הופך אחת לחברה בשנייה.' },
+                { text: 'מסקנה: לכן, חלק מהטקסטים הם פוסטמודרניסטיים.', isCorrect: false, feedback: 'זו טענה נכונה כשלעצמה, אך היא לא נובעת *בהכרח* מההנחות שניתנו כאן.' },
+                { text: 'מסקנה: לכן, לא ניתן להסיק מסקנה הכרחית.', isCorrect: true, nextStage: 5 }
+            ],
+            vennData: [{ sets: ['דברים שהם טקסט'], size: 12 }, { sets: ['פוסטמודרניסטים'], size: 4 }, { sets: ['רשימת קניות'], size: 1 }, { sets: ['דברים שהם טקסט', 'פוסטמודרניסטים'], size: 4 }, { sets: ['דברים שהם טקסט', 'רשימת קניות'], size: 1 }]
+        },
+        {
+            id: 5,
+            title: 'שלב 5: האימוג\'י האנליטי',
+            premises: [
+                'הנחה א\': אף פילוסוף אנליטי לא השתמש באימוג\'י במאמר אקדמי.',
+                'הנחה ב\': חלק מהמרצים הצעירים משתמשים באימוג\'ים במיילים לסטודנטים.'
+            ],
+            options: [
+                { text: 'מסקנה: לכן, חלק מהמרצים הצעירים אינם פילוסופים אנליטיים.', isCorrect: false, feedback: 'לא נכון. ההנחות מדברות על שימוש באימוג\'י בהקשרים שונים (מאמר מול מייל). לא ניתן להסיק מכך דבר.' },
+                { text: 'מסקנה: לכן, אף מרצה צעיר אינו פילוסוף אנליטי.', isCorrect: false, feedback: 'לא נכון. זו הכללה גורפת שאינה נתמכת על ידי ההנחות.' },
+                { text: 'מסקנה: לכן, לא ניתן להסיק מסקנה הכרחית על סמך ההנחות הללו.', isCorrect: true, nextStage: 'end' }
+            ]
+        },
+        {
+            id: 'end',
+            title: 'סיימת את המבוך!',
+          premises: [
+    'הוכחת שאת/ה יכול/ה לנווט בסבך הלוגיקה הפילוסופית.',
+    'כעת, הנה היסק אחרון לסיום:',
+    'הנחה א\': כל הפילוסופים מצטיינים בהסקת מסקנות תקפות.',
+    'הנחה ב\': הבינה המלאכותית מסוגלת להסיק מסקנות תקפות.',
+    'מסקנה אפשרית: לכן, הבינה המלאכותית שווה ביכולותיה לפילוסופים.',
+    '...רגע, האם המסקנה הזו באמת נובעת מההנחות? או שזו בדיוק הדוגמה ליכולת האנושית להבחין בניואנסים שהמכונה מפספסת? 😉'
+],
+            options: []
+        }
+    ];
+
+    let currentStageId = 'start';
+    const titleEl = document.getElementById('stage-title');
+    const premisesEl = document.getElementById('premises-container');
+    const optionsEl = document.getElementById('options-container');
+    const feedbackEl = document.getElementById('feedback-container');
+    const feedbackTextEl = feedbackEl.querySelector('.feedback-text');
+    const vennEl = document.getElementById('venn-diagram');
+    const continueBtn = document.getElementById('continue-button');
+    const restartBtn = document.getElementById('restart-button');
+
+    function drawVenn(vennData) {
+        vennEl.innerHTML = '';
+        if (!vennData) return;
+        try {
+            const chart = venn.VennDiagram().width(350).height(300);
+            d3.select("#venn-diagram").datum(vennData).call(chart);
+            d3.selectAll("#venn-diagram .venn-circle path").style("fill-opacity", 0.5).style("stroke-width", 2).style("stroke", "#333");
+            d3.selectAll("#venn-diagram text").style("font-family", "Arial, sans-serif").style("font-size", "14px").style("fill", "#000");
+        } catch (e) {
+            console.error("Venn diagram error:", e);
+        }
+    }
+
+    function handleOptionClick(option) {
+        const stage = mazeData.find(s => s.id === currentStageId);
+        
+        feedbackEl.style.display = 'block';
+        document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+
+        if (option.isCorrect) {
+            feedbackTextEl.textContent = 'נכון מאוד!';
+            feedbackTextEl.style.color = '#1e8e3e';
+            drawVenn(stage.vennData);
+            
+            if (option.nextStage) {
+                continueBtn.style.display = 'block';
+                continueBtn.onclick = () => {
+                    currentStageId = option.nextStage;
+                    renderStage(currentStageId);
+                };
+            }
+        } else {
+            feedbackTextEl.textContent = option.feedback;
+            feedbackTextEl.style.color = '#d93025';
+            drawVenn(stage.vennData);
+            
+            setTimeout(() => {
+                document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = false);
+                feedbackEl.style.display = 'none';
+            }, 5000);
+        }
+    }
+
+    function renderStage(stageId) {
+        const stage = mazeData.find(s => s.id === stageId);
+        if (!stage) return;
+
+        feedbackEl.style.display = 'none';
+        continueBtn.style.display = 'none';
+        
+        titleEl.textContent = stage.title;
+        premisesEl.innerHTML = '';
+        stage.premises.forEach(p => {
+            const pElement = document.createElement('div');
+            pElement.innerHTML = p; // Use innerHTML to render emoji
+            pElement.className = 'premise';
+            premisesEl.appendChild(pElement);
+        });
+
+        optionsEl.innerHTML = '';
+        stage.options.forEach(option => {
+            const button = document.createElement('button');
+            button.className = 'option-btn';
+            button.textContent = option.text;
+            button.onclick = () => handleOptionClick(option);
+            optionsEl.appendChild(button);
+        });
+        
+        restartBtn.style.display = (stage.id === 'end') ? 'block' : 'none';
+        if (stage.id === 'end') {
+             optionsEl.style.display = 'none';
+        } else {
+             optionsEl.style.display = 'flex';
+        }
+    }
+    
+    function init() {
+        currentStageId = 'start';
+        renderStage('start');
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
