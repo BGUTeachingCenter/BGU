@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-EZ4EEMW6C2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-EZ4EEMW6C2');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
+
+  <title>ספריית הקורסים - היחידה לקידום איכות ההוראה והלמידה, אוניברסיטת בן גוריון בנגב</title>
+
+  <meta property="og:title" content="ספריית הקורסים - אוניברסיטת בן גוריון בנגב">
+  <meta property="og:description" content="ספרי קורס דיגיטליים מבית היחידה לקידום איכות ההוראה והלמידה, אוניברסיטת בן גוריון בנגב.">
+  <meta property="og:url" content="https://bguteachingcenter.github.io/BGU/library/">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://bguteachingcenter.github.io/BGU/logo.png">
+
+  <style>
+    :root {
+      --bgu-orange:        #f7941e;
+      --bgu-orange-deep:   #e16327;
+      --bgu-orange-tint:   #fde8cf;
+      --bgu-gray-dark:     #58595b;
+      --bgu-gray-medium:   #828487;
+      --bgu-gray-light:    #cfd6da;
+      --bgu-text:          #333333;
+
+      --bgu-gradient-1: linear-gradient(135deg, #e16327 0%, #f7941e 100%);
+
+      --bgu-font: "Open Sans", "Assistant", "Arial", sans-serif;
+
+      --bg: #fbfaf8;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: var(--bgu-font);
+      direction: rtl;
+      background-color: var(--bg);
+      color: var(--bgu-text);
+      margin: 0;
+      padding: 0 0 20px;
+      overflow-x: hidden;
+    }
+
+    a:focus-visible {
+      outline: 3px solid var(--bgu-orange);
+      outline-offset: 3px;
+      border-radius: 8px;
+    }
+
+    /* ===================== HERO ===================== */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 52px 24px 40px;
+      text-align: center;
+    }
+    .hero__deco { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+    .hero__deco span { position: absolute; display: block; }
+    .deco-1 { width: 200px; height: 380px; top: -90px; right: -50px;
+              background: var(--bgu-orange); opacity: .13;
+              clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%); }
+    .deco-2 { width: 150px; height: 320px; top: -60px; right: 90px;
+              background: var(--bgu-gray-medium); opacity: .10;
+              clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%); }
+    .deco-3 { width: 170px; height: 340px; top: -70px; left: -50px;
+              background: var(--bgu-orange); opacity: .11;
+              clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%); }
+    .deco-4 { width: 120px; height: 280px; top: -40px; left: 90px;
+              background: var(--bgu-gray-light); opacity: .28;
+              clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%); }
+
+    .hero > * { position: relative; z-index: 1; }
+
+    .hero__logo {
+      width: min(300px, 54%);
+      height: auto;
+      margin: 0 auto 10px;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    .hero__logo:hover { transform: scale(1.04); }
+
+    .hero__eyebrow {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      color: var(--bgu-orange-deep);
+      margin: 4px 0 12px;
+    }
+
+    .hero__title {
+      font-size: clamp(26px, 4.2vw, 40px);
+      font-weight: 800;
+      color: var(--bgu-text);
+      line-height: 1.15;
+      margin: 0 auto 12px;
+      max-width: 760px;
+    }
+
+    .hero__sub {
+      font-size: clamp(16px, 2.2vw, 19px);
+      font-weight: 400;
+      color: var(--bgu-gray-medium);
+      max-width: 620px;
+      margin: 0 auto 16px;
+      line-height: 1.5;
+    }
+
+    /* ===================== חזרה לעמוד הבית ===================== */
+    .backhome {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--bgu-orange-deep);
+      text-decoration: none;
+    }
+    .backhome:hover { text-decoration: underline; }
+
+    /* ===================== רשת הספרים ===================== */
+    .books {
+      max-width: 940px;
+      margin: 34px auto 0;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .book {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      border: 1px solid #eee;
+      border-radius: 18px;
+      padding: 26px 24px 22px;
+      box-shadow: 0 6px 18px rgba(88, 89, 91, 0.07);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .book::after { /* פס אלכסוני עדין - מוטיב הפרספקטיבה */
+      content: "";
+      position: absolute;
+      top: 0; bottom: 0; left: -14px;
+      width: 78px;
+      background: var(--bgu-orange-tint);
+      opacity: .5;
+      clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%);
+      pointer-events: none;
+    }
+    .book:hover {
+      transform: translateY(-4px);
+      border-color: var(--bgu-orange);
+      box-shadow: 0 12px 26px rgba(247, 148, 30, 0.18);
+    }
+    .book > * { position: relative; z-index: 1; }
+
+    .book__icon {
+      font-size: 40px;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .book__title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--bgu-text);
+      line-height: 1.2;
+      margin: 0 0 6px;
+    }
+
+    .book__author {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--bgu-gray-medium);
+      margin: 0 0 14px;
+    }
+
+    .book__badge {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--bgu-orange-deep);
+      background: var(--bgu-orange-tint);
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin: 0 0 14px;
+    }
+
+    .book__spacer { flex: 1 1 auto; }
+
+    .book__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      align-self: flex-start;
+      padding: 11px 20px;
+      border-radius: 12px;
+      background: var(--bgu-gradient-1);
+      color: #fff;
+      font-weight: 800;
+      font-size: 16px;
+      text-decoration: none;
+      box-shadow: 0 6px 16px rgba(225, 99, 39, 0.22);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .book__cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(225, 99, 39, 0.30);
+    }
+
+    /* ===================== הערה ===================== */
+    .note {
+      max-width: 940px;
+      margin: 26px auto 0;
+      padding: 0 24px;
+      font-size: 14px;
+      color: var(--bgu-gray-medium);
+      text-align: center;
+    }
+
+    /* ===================== פוטר ===================== */
+    footer {
+      margin-top: 46px;
+      padding: 24px;
+      text-align: center;
+      color: var(--bgu-gray-medium);
+      font-size: 14px;
+      border-top: 1px solid var(--bgu-gray-light);
+    }
+    .hero__motto {
+      display: inline-block;
+      font-size: clamp(16px, 2.2vw, 20px);
+      font-weight: 700;
+      color: var(--bgu-orange-deep);
+    }
+    .hero__motto::before {
+      content: "";
+      display: inline-block;
+      width: 24px; height: 11px;
+      margin-left: 10px;
+      vertical-align: middle;
+      background: var(--bgu-gradient-1);
+      clip-path: polygon(30% 0, 100% 0, 70% 100%, 0 100%);
+    }
+
+    @media (max-width: 700px) {
+      .deco-2, .deco-4 { display: none; }
+      .hero { padding: 40px 18px 32px; }
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .hero__logo, .hero__eyebrow, .hero__title, .hero__sub, .books {
+        animation: fadeUp 0.7s ease both;
+      }
+      .hero__eyebrow { animation-delay: 0.05s; }
+      .hero__title   { animation-delay: 0.10s; }
+      .hero__sub     { animation-delay: 0.18s; }
+      .books         { animation-delay: 0.26s; }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================== HERO ===================== -->
+  <header class="hero">
+    <div class="hero__deco" aria-hidden="true">
+      <span class="deco-1"></span>
+      <span class="deco-2"></span>
+      <span class="deco-3"></span>
+      <span class="deco-4"></span>
+    </div>
+
+    <a href="https://www.bgu.ac.il/u/academic-affairs/academicdev/" target="_blank">
+      <img src="../logo.png" alt="לוגו אוניברסיטת בן-גוריון בנגב" class="hero__logo">
+    </a>
+
+    <p class="hero__eyebrow">היחידה לקידום איכות ההוראה והלמידה · אוניברסיטת בן-גוריון בנגב</p>
+
+    <h1 class="hero__title">ספריית הקורסים</h1>
+
+    <p class="hero__sub">
+      ספרי קורס דיגיטליים, פתוחים וחינמיים
+    </p>
+
+    <a href="../" class="backhome">→ חזרה לעמוד הבית</a>
+  </header>
+
+  <!-- ===================== רשת הספרים ===================== -->
+  <main class="books">
+
+    <article class="book">
+      <div class="book__icon">📐</div>
+      <h2 class="book__title">אלגברה לינארית</h2>
+      <p class="book__author">ד"ר יונתן שלח · ד"ר נדב מאיר</p>
+      <div class="book__spacer"></div>
+      <a class="book__cta" href="https://bguteachingcenter.github.io/algebra/" target="_blank" rel="noopener">
+        פתיחת הספר ←
+      </a>
+    </article>
+
+    <article class="book">
+      <div class="book__icon">📈</div>
+      <h2 class="book__title">חשבון דיפרנציאלי ואינטגרלי 1 להנדסה</h2>
+      <p class="book__author">יובל חצ׳טריאן-רזיאל</p>
+      <span class="book__badge">טיוטה</span>
+      <div class="book__spacer"></div>
+      <a class="book__cta" href="https://bguteachingcenter.github.io/BGU-Calculus-Book/" target="_blank" rel="noopener">
+        פתיחת הספר ←
+      </a>
+    </article>
+
+  </main>
+
+  <p class="note">
+    הספרייה תתעדכן ותורחב עם ספרי קורס נוספים.
+  </p>
+
+  <footer>
+    <span class="hero__motto">כשמשנים פרספקטיבה, מגלים עולמות.</span>
+    © היחידה לקידום איכות ההוראה והלמידה | אוניברסיטת בן גוריון בנגב, 2026
+  </footer>
+
+</body>
+</html>
