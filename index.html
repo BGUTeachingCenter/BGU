@@ -33,334 +33,210 @@
       --bgu-gray-medium:   #828487;
       --bgu-gray-light:    #cfd6da;
       --bgu-text:          #333333;
-
       --bgu-gradient-1: linear-gradient(135deg, #e16327 0%, #f7941e 100%);
-
-      --bgu-font: "Open Sans", "Assistant", "Arial", sans-serif;
-
+      --bgu-font: "Open Sans", "Arial", sans-serif;
       --bg: #fbfaf8;
     }
-
     * { box-sizing: border-box; }
-
     body {
       font-family: var(--bgu-font);
       direction: rtl;
-      background-color: var(--bg);
+      background: var(--bg);
       color: var(--bgu-text);
       margin: 0;
-      padding: 0 0 20px;
       overflow-x: hidden;
     }
+    a:focus-visible { outline: 3px solid var(--bgu-orange); outline-offset: 3px; border-radius: 8px; }
 
-    a:focus-visible {
-      outline: 3px solid var(--bgu-orange);
-      outline-offset: 3px;
-      border-radius: 8px;
-    }
-
-    /* ===================== HERO דרמטי (דף פתיחה) ===================== */
-    .hero {
+    /* ===================== מנהרת הפרספקטיבה ===================== */
+    .tunnel {
       position: relative;
+      height: 100vh;
+      min-height: 640px;
       overflow: hidden;
-      padding: 66px 24px 84px;
-      text-align: center;
-      background: linear-gradient(135deg, #e16327 0%, #f7941e 100%);
-      color: #fff;
+      background: radial-gradient(120% 90% at 50% 45%, #f7941e 0%, #e16327 45%, #58595b 100%);
     }
-    /* שכבות מקביליות אלכסוניות - מוטיב הפרספקטיבה, בעומק ובתנועה */
-    .hero__deco { position: absolute; inset: -10% -5%; pointer-events: none; z-index: 0; }
-    .hero__deco span {
-      position: absolute; display: block;
+    .tunnel__layers { position: absolute; inset: 0; perspective: 900px; }
+    .layer {
+      position: absolute;
+      top: 50%; left: 50%;
       clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%);
       will-change: transform;
+      transform: translate(-50%, -50%);
     }
-    .pl-1 { width: 340px; height: 620px; top: -80px; right: -60px;  background: #ffffff; opacity: .10; }
-    .pl-2 { width: 260px; height: 560px; top: -40px; right: 150px;  background: #58595b; opacity: .12; }
-    .pl-3 { width: 300px; height: 600px; top: -70px; left: -70px;   background: #ffffff; opacity: .13; }
-    .pl-4 { width: 200px; height: 480px; top: 20px;  left: 140px;   background: #c94f1e; opacity: .25; }
-    .pl-5 { width: 150px; height: 380px; bottom: -120px; right: 34%; background: #ffffff; opacity: .08; }
+    /* שכבות המקבילית - מהחיצונית (קרובה) לפנימית (רחוקה), יוצרות תחושת עומק */
+    .l1 { width: 1400px; height: 1400px; margin-left: -760px; background: #58595b; opacity: .55; }
+    .l2 { width: 1150px; height: 1150px; margin-left: -560px; background: #ffffff; opacity: .10; }
+    .l3 { width: 920px;  height: 920px;  margin-left: -420px; background: #e16327; opacity: .55; }
+    .l4 { width: 700px;  height: 700px;  margin-left: -280px; background: #ffffff; opacity: .12; }
+    .l5 { width: 480px;  height: 480px;  margin-left: -150px; background: #f7941e; opacity: .65; }
+    .l6 { width: 280px;  height: 280px;  margin-left: -40px;  background: #ffffff; opacity: .16; }
 
-    .hero > * { position: relative; z-index: 1; }
-
-    .hero__plate {
-      display: inline-block;
-      background: #fff;
-      padding: 16px 26px;
-      border-radius: 16px;
-      box-shadow: 0 12px 34px rgba(88, 89, 91, 0.28);
-      margin-bottom: 22px;
-    }
-    .hero__logo {
-      width: min(230px, 62vw);
-      height: auto;
-      display: block;
-    }
-
-    .hero__eyebrow {
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      color: #fff;
-      opacity: .92;
-      margin: 0 0 10px;
-      text-shadow: 0 1px 2px rgba(0,0,0,.15);
-    }
-    .hero__title {
-      font-size: clamp(30px, 5.2vw, 52px);
-      font-weight: 800;
-      color: #fff;
-      line-height: 0.98;
-      margin: 0 auto 14px;
-      max-width: 820px;
-      text-shadow: 0 2px 8px rgba(0,0,0,.16);
-    }
-    .hero__sub {
-      font-size: clamp(16px, 2.3vw, 20px);
-      font-weight: 600;
-      color: #fff;
-      opacity: .95;
-      max-width: 640px;
-      margin: 0 auto;
-      line-height: 1.5;
-      text-shadow: 0 1px 3px rgba(0,0,0,.16);
-    }
-
-    /* גל אלכסוני בתחתית ה-hero - מעבר לאזור הבהיר */
-    .hero__edge {
-      position: absolute;
-      left: 0; right: 0; bottom: -1px;
-      height: 46px;
-      background: var(--bg);
-      clip-path: polygon(0 55%, 100% 0, 100% 100%, 0 100%);
-      z-index: 1;
-    }
-
-    /* ===================== שערים גדולים ===================== */
-    .gates {
-      max-width: 780px;
-      margin: -34px auto 0;
-      padding: 0 24px;
+    .tunnel__center {
       position: relative;
       z-index: 2;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 22px;
-    }
-
-    .gate {
-      position: relative;
-      overflow: hidden;
+      height: 100%;
       display: flex;
-      align-items: flex-start;
-      gap: 18px;
-      padding: 26px 28px;
-      border-radius: 18px;
-      text-decoration: none;
-      text-align: right;
-      background: #ffffff;
-      border: 1px solid #eee;
-      box-shadow: 0 10px 26px rgba(88, 89, 91, 0.10);
-      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
     }
-    .gate::after {
-      content: "";
-      position: absolute;
-      top: 0; bottom: 0; left: -14px;
-      width: 82px;
-      background: var(--bgu-orange-tint);
-      opacity: .5;
-      clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%);
+    .tunnel__vignette {
+      position: absolute; inset: 0; z-index: 1;
+      background: radial-gradient(60% 45% at 50% 48%, rgba(0,0,0,.18) 0%, transparent 70%);
       pointer-events: none;
     }
-    .gate:hover {
-      transform: translateY(-5px);
-      border-color: var(--bgu-orange);
-      box-shadow: 0 16px 32px rgba(247, 148, 30, 0.20);
-    }
-    .gate > * { position: relative; z-index: 1; }
 
-    .gate__icon { font-size: 40px; line-height: 1; flex: 0 0 auto; }
-    .gate__text { display: flex; flex-direction: column; }
-    .gate__title { font-size: 22px; font-weight: 800; color: var(--bgu-text); line-height: 1.15; }
-    .gate__desc { font-size: 14.5px; font-weight: 400; color: var(--bgu-gray-medium); margin-top: 6px; line-height: 1.45; }
-
-    .gate--soon {
-      background: #f6f5f3;
-      border-style: dashed;
-      cursor: default;
-      box-shadow: none;
-    }
-    .gate--soon::after { opacity: .25; }
-    .gate--soon:hover { transform: none; border-color: var(--bgu-gray-light); box-shadow: none; }
-    .gate--soon .gate__title, .gate--soon .gate__icon { color: var(--bgu-gray-medium); filter: grayscale(0.3); }
-    .gate__badge {
+    .plate {
       display: inline-block;
-      align-self: flex-start;
-      font-size: 12px; font-weight: 700;
-      color: var(--bgu-gray-medium);
-      background: var(--bgu-gray-light);
-      padding: 3px 12px; border-radius: 999px; margin-top: 10px;
-    }
-
-    /* ===================== קישורים משניים ===================== */
-    .secondary {
-      max-width: 780px;
-      margin: 24px auto 0;
-      padding: 0 24px;
-      display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
-    }
-    .slink {
-      display: inline-flex; align-items: center; gap: 9px;
-      padding: 10px 18px; border-radius: 12px;
-      background: #ffffff; border: 1px solid #eee;
-      text-decoration: none; color: var(--bgu-text);
-      font-weight: 700; font-size: 15px;
-      box-shadow: 0 2px 6px rgba(88, 89, 91, 0.04);
-      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-    }
-    .slink:hover { transform: translateY(-2px); border-color: var(--bgu-orange); background: #fffdf9; }
-    .slink__ico { font-size: 18px; line-height: 1; }
-
-    /* ===================== באנר המוטו (נפרד מהלוגו) ===================== */
-    .mottoband {
-      position: relative;
-      overflow: hidden;
-      max-width: 900px;
-      margin: 48px auto 0;
-      padding: 30px 34px;
-      border-radius: 20px;
       background: #fff;
-      border: 1px solid #f0e6da;
-      text-align: center;
+      padding: 14px 22px;
+      border-radius: 14px;
+      box-shadow: 0 14px 36px rgba(0,0,0,.35);
+      margin-bottom: 20px;
     }
-    .mottoband::before {
-      content: "";
-      position: absolute; top: 0; bottom: 0; right: -18px;
-      width: 120px;
-      background: var(--bgu-gradient-1);
-      opacity: .12;
-      clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%);
-    }
-    .mottoband__text {
-      position: relative;
-      font-size: clamp(20px, 3vw, 30px);
-      font-weight: 800;
-      color: var(--bgu-orange-deep);
-      line-height: 1.1;
-    }
+    .plate img { width: min(200px, 46vw); height: auto; display: block; }
 
-    /* ===================== פוטר ===================== */
-    footer {
-      margin-top: 40px;
-      padding: 24px;
-      text-align: center;
-      color: var(--bgu-gray-medium);
-      font-size: 14px;
-      border-top: 1px solid var(--bgu-gray-light);
+    .eyebrow {
+      font-size: 14px; font-weight: 700; letter-spacing: 1.4px;
+      color: #fff; opacity: .95; margin: 0 0 10px;
+      text-shadow: 0 2px 6px rgba(0,0,0,.35);
     }
+    .title {
+      font-size: clamp(32px, 6vw, 58px);
+      font-weight: 800; color: #fff; line-height: .92;
+      margin: 0 auto 14px; max-width: 780px;
+      text-shadow: 0 4px 18px rgba(0,0,0,.4);
+    }
+    .scrollcue {
+      position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%);
+      z-index: 2; color: #fff; opacity: .85; font-size: 13px; font-weight: 700;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .scrollcue span { display:block; width: 1px; height: 26px; background: rgba(255,255,255,.7); animation: pulse 1.6s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+
+    /* ===================== שערים ===================== */
+    .gates {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 64px 24px 40px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .gate {
+      position: relative; overflow: hidden;
+      display: flex; align-items: flex-start; gap: 16px;
+      padding: 24px 26px; border-radius: 18px;
+      text-decoration: none; text-align: right;
+      background: #fff; border: 1px solid #eee;
+      box-shadow: 0 10px 26px rgba(88,89,91,.10);
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+    .gate::after {
+      content: ""; position: absolute; top: 0; bottom: 0; left: -14px; width: 82px;
+      background: var(--bgu-orange-tint); opacity: .5;
+      clip-path: polygon(32% 0, 100% 0, 68% 100%, 0 100%); pointer-events: none;
+    }
+    .gate:hover { transform: translateY(-5px); border-color: var(--bgu-orange); box-shadow: 0 16px 32px rgba(247,148,30,.2); }
+    .gate > * { position: relative; z-index: 1; }
+    .gate__icon { font-size: 36px; line-height: 1; }
+    .gate__title { font-size: 20px; font-weight: 800; color: var(--bgu-text); line-height: 1.15; display:block; }
+    .gate__desc { font-size: 14px; color: var(--bgu-gray-medium); margin-top: 5px; line-height: 1.45; display:block; }
+    .gate--soon { background: #f6f5f3; border-style: dashed; cursor: default; box-shadow: none; }
+    .gate--soon:hover { transform: none; border-color: var(--bgu-gray-light); box-shadow: none; }
+    .gate--soon .gate__title, .gate--soon .gate__icon { color: var(--bgu-gray-medium); filter: grayscale(.3); }
+    .badge { display:inline-block; font-size:12px; font-weight:700; color: var(--bgu-gray-medium); background: var(--bgu-gray-light); padding: 3px 12px; border-radius: 999px; margin-top: 8px; }
+
+    .secondary { max-width: 900px; margin: 0 auto; padding: 0 24px; display:flex; flex-wrap:wrap; justify-content:center; gap:12px; }
+    .slink { display:inline-flex; align-items:center; gap:9px; padding:10px 18px; border-radius:12px; background:#fff; border:1px solid #eee; text-decoration:none; color:var(--bgu-text); font-weight:700; font-size:15px; }
+
+    .mottoband {
+      max-width: 720px; margin: 44px auto 0; padding: 26px 32px;
+      border-radius: 20px; background: #fff; border: 1px solid #f0e6da; text-align: center;
+    }
+    .mottoband p { font-size: clamp(18px, 2.4vw, 24px); font-weight: 800; color: var(--bgu-orange-deep); margin: 0; line-height: 1.2; }
+
+    footer { margin-top: 40px; padding: 24px; text-align: center; color: var(--bgu-gray-medium); font-size: 14px; border-top: 1px solid var(--bgu-gray-light); }
 
     @media (max-width: 700px) {
-      .pl-2, .pl-5 { display: none; }
-      .hero { padding: 48px 18px 76px; }
       .gates { grid-template-columns: 1fr; }
+      .tunnel { height: 92vh; }
     }
-
-    @media (prefers-reduced-motion: no-preference) {
-      .pl-1 { animation: drift1 13s ease-in-out infinite alternate; }
-      .pl-3 { animation: drift2 16s ease-in-out infinite alternate; }
-      .pl-4 { animation: drift1 11s ease-in-out infinite alternate; }
-      .hero__plate, .hero__eyebrow, .hero__title, .hero__sub, .gates, .secondary {
-        animation: fadeUp 0.7s ease both;
-      }
-      .hero__eyebrow { animation-delay: 0.05s; }
-      .hero__title   { animation-delay: 0.10s; }
-      .hero__sub     { animation-delay: 0.18s; }
-      .gates         { animation-delay: 0.28s; }
-      .secondary     { animation-delay: 0.36s; }
-    }
-    @keyframes drift1 { from { transform: translateY(0) rotate(0deg); } to { transform: translateY(26px) rotate(2deg); } }
-    @keyframes drift2 { from { transform: translateY(0) rotate(0deg); } to { transform: translateY(-24px) rotate(-2deg); } }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   </style>
 </head>
 <body>
 
-  <!-- ===================== HERO ===================== -->
-  <header class="hero">
-    <div class="hero__deco" aria-hidden="true">
-      <span class="pl-1"></span>
-      <span class="pl-2"></span>
-      <span class="pl-3"></span>
-      <span class="pl-4"></span>
-      <span class="pl-5"></span>
+  <section class="tunnel">
+    <div class="tunnel__layers" aria-hidden="true">
+      <span class="layer l1" data-depth=".9"></span>
+      <span class="layer l2" data-depth=".75"></span>
+      <span class="layer l3" data-depth=".6"></span>
+      <span class="layer l4" data-depth=".45"></span>
+      <span class="layer l5" data-depth=".3"></span>
+      <span class="layer l6" data-depth=".15"></span>
     </div>
-
-    <span class="hero__plate">
-      <a href="https://www.bgu.ac.il/u/academic-affairs/academicdev/" target="_blank">
-        <img src="logo.png" alt="לוגו אוניברסיטת בן-גוריון בנגב" class="hero__logo">
-      </a>
-    </span>
-
-    <p class="hero__eyebrow">אוניברסיטת בן-גוריון בנגב</p>
-    <h1 class="hero__title">היחידה לקידום איכות ההוראה והלמידה</h1>
-    <p class="hero__sub">כל הכלים במקום אחד — בוטים, בדיקת תרגילים, ספרי קורס וסימולציות</p>
-
-    <div class="hero__edge" aria-hidden="true"></div>
-  </header>
-
-  <!-- ===================== שערים גדולים ===================== -->
-  <main class="gates">
-
-    <a class="gate" href="https://botagent-tm7u.onrender.com/" target="_blank" rel="noopener">
-      <span class="gate__icon">🤖</span>
-      <span class="gate__text">
-        <span class="gate__title">בוטים</span>
-        <span class="gate__desc">בוטי־הוראה מבוססי בינה מלאכותית, בנויים מחומרי הקורס</span>
+    <div class="tunnel__vignette" aria-hidden="true"></div>
+    <div class="tunnel__center">
+      <span class="plate">
+        <img src="logo.png" alt="לוגו אוניברסיטת בן-גוריון בנגב">
       </span>
-    </a>
-
-    <div class="gate gate--soon" aria-disabled="true">
-      <span class="gate__icon">✍️</span>
-      <span class="gate__text">
-        <span class="gate__title">בדיקת תרגילים</span>
-        <span class="gate__desc">הגשת עבודות ובדיקה אוטומטית עם פידבק מיידי</span>
-        <span class="gate__badge">בקרוב</span>
-      </span>
+      <p class="eyebrow">אוניברסיטת בן-גוריון בנגב</p>
+      <h1 class="title">כלים דיגיטליים להוראה וללמידה</h1>
     </div>
-
-    <a class="gate" href="library/">
-      <span class="gate__icon">📚</span>
-      <span class="gate__text">
-        <span class="gate__title">ספרי הקורס</span>
-        <span class="gate__desc">ספרי קורס דיגיטליים, פתוחים וחינמיים</span>
-      </span>
-    </a>
-
-    <a class="gate" href="simulations/">
-      <span class="gate__icon">🔬</span>
-      <span class="gate__text">
-        <span class="gate__title">מאגר הסימולציות</span>
-        <span class="gate__desc">סימולציות, משחקים וכלים אינטראקטיביים להוראה</span>
-      </span>
-    </a>
-
-  </main>
-
-  <!-- ===================== קישורים משניים ===================== -->
-  <nav class="secondary" aria-label="קישורים נוספים">
-    <a class="slink" href="site-map/"><span class="slink__ico">🧭</span> מורה נבוכים</a>
-    <a class="slink" href="guidelines.html"><span class="slink__ico">📜</span> קווים מנחים</a>
-  </nav>
-
-  <!-- ===================== המוטו ===================== -->
-  <section class="mottoband" aria-label="מוטו">
-    <p class="mottoband__text">כשמשנים פרספקטיבה, מגלים עולמות.</p>
+    <div class="scrollcue" aria-hidden="true"><span></span>גלילה</div>
   </section>
 
-  <footer>
-    © היחידה לקידום איכות ההוראה והלמידה | אוניברסיטת בן גוריון בנגב, 2026
-  </footer>
+  <main class="gates">
+    <a class="gate" href="https://botagent-tm7u.onrender.com/" target="_blank" rel="noopener">
+      <span class="gate__icon">🤖</span>
+      <span><span class="gate__title">בוטים</span><span class="gate__desc">בוטי־הוראה מבוססי בינה מלאכותית, בנויים מחומרי הקורס</span></span>
+    </a>
+    <div class="gate gate--soon" aria-disabled="true">
+      <span class="gate__icon">✍️</span>
+      <span><span class="gate__title">בדיקת תרגילים</span><span class="gate__desc">הגשת עבודות ובדיקה אוטומטית עם פידבק מיידי</span><span class="badge">בקרוב</span></span>
+    </div>
+    <a class="gate" href="library/">
+      <span class="gate__icon">📚</span>
+      <span><span class="gate__title">ספרי הקורס</span><span class="gate__desc">ספרי קורס דיגיטליים, פתוחים וחינמיים</span></span>
+    </a>
+    <a class="gate" href="simulations/">
+      <span class="gate__icon">🔬</span>
+      <span><span class="gate__title">מאגר הסימולציות</span><span class="gate__desc">סימולציות, משחקים וכלים אינטראקטיביים להוראה</span></span>
+    </a>
+  </main>
+
+  <nav class="secondary" aria-label="קישורים נוספים">
+    <a class="slink" href="site-map/">🧭 מורה נבוכים</a>
+    <a class="slink" href="guidelines.html">📜 קווים מנחים</a>
+  </nav>
+
+  <section class="mottoband"><p>כשמשנים פרספקטיבה, מגלים עולמות.</p></section>
+
+  <footer>© היחידה לקידום איכות ההוראה והלמידה | אוניברסיטת בן גוריון בנגב, 2026</footer>
+
+  <script>
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce) {
+      var layers = Array.prototype.slice.call(document.querySelectorAll('.layer'));
+      var tunnel = document.querySelector('.tunnel');
+      tunnel.addEventListener('mousemove', function (e) {
+        var r = tunnel.getBoundingClientRect();
+        var dx = (e.clientX - r.left - r.width / 2) / (r.width / 2);
+        var dy = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+        layers.forEach(function (el) {
+          var depth = parseFloat(el.dataset.depth);
+          el.style.transform = 'translate(-50%,-50%) translate3d(' + (dx * depth * -40) + 'px,' + (dy * depth * -30) + 'px,0)';
+        });
+      });
+      tunnel.addEventListener('mouseleave', function () {
+        layers.forEach(function (el) { el.style.transform = 'translate(-50%,-50%)'; });
+      });
+    }
+  </script>
 
 </body>
 </html>
