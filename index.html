@@ -97,7 +97,7 @@
       box-shadow: 0 14px 36px rgba(0,0,0,.35);
       margin-bottom: 20px;
     }
-    .plate img { width: min(200px, 46vw); height: auto; display: block; }
+    .plate img { width: min(280px, 58vw); height: auto; display: block; }
 
     .eyebrow {
       font-size: 14px; font-weight: 700; letter-spacing: 1.4px;
@@ -120,17 +120,17 @@
 
     /* ===================== שערים ===================== */
     .gates {
-      max-width: 900px;
+      max-width: 1020px;
       margin: 0 auto;
       padding: 64px 24px 40px;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 20px;
+      gap: 24px;
     }
     .gate {
       position: relative; overflow: hidden;
-      display: flex; align-items: flex-start; gap: 16px;
-      padding: 24px 26px; border-radius: 18px;
+      display: flex; align-items: flex-start; gap: 20px;
+      padding: 30px 32px; border-radius: 20px;
       text-decoration: none; text-align: right;
       background: #fff; border: 1px solid #eee;
       box-shadow: 0 10px 26px rgba(88,89,91,.10);
@@ -143,15 +143,15 @@
     }
     .gate:hover { transform: translateY(-5px); border-color: var(--bgu-orange); box-shadow: 0 16px 32px rgba(247,148,30,.2); }
     .gate > * { position: relative; z-index: 1; }
-    .gate__icon { font-size: 36px; line-height: 1; }
-    .gate__title { font-size: 20px; font-weight: 800; color: var(--bgu-text); line-height: 1.15; display:block; }
-    .gate__desc { font-size: 14px; color: var(--bgu-gray-medium); margin-top: 5px; line-height: 1.45; display:block; }
+    .gate__icon { font-size: 44px; line-height: 1; }
+    .gate__title { font-size: 24px; font-weight: 800; color: var(--bgu-text); line-height: 1.15; display:block; }
+    .gate__desc { font-size: 16px; color: var(--bgu-gray-medium); margin-top: 7px; line-height: 1.5; display:block; }
     .gate--soon { background: #f6f5f3; border-style: dashed; cursor: default; box-shadow: none; }
     .gate--soon:hover { transform: none; border-color: var(--bgu-gray-light); box-shadow: none; }
     .gate--soon .gate__title, .gate--soon .gate__icon { color: var(--bgu-gray-medium); filter: grayscale(.3); }
     .badge { display:inline-block; font-size:12px; font-weight:700; color: var(--bgu-gray-medium); background: var(--bgu-gray-light); padding: 3px 12px; border-radius: 999px; margin-top: 8px; }
 
-    .secondary { max-width: 900px; margin: 0 auto; padding: 0 24px; display:flex; flex-wrap:wrap; justify-content:center; gap:12px; }
+    .secondary { max-width: 1020px; margin: 0 auto; padding: 0 24px; display:flex; flex-wrap:wrap; justify-content:center; gap:12px; }
     .slink { display:inline-flex; align-items:center; gap:9px; padding:10px 18px; border-radius:12px; background:#fff; border:1px solid #eee; text-decoration:none; color:var(--bgu-text); font-weight:700; font-size:15px; }
 
     .mottoband {
@@ -185,7 +185,7 @@
         <img src="logo.png" alt="לוגו אוניברסיטת בן-גוריון בנגב">
       </span>
       <p class="eyebrow">אוניברסיטת בן-גוריון בנגב</p>
-      <h1 class="title">כלים דיגיטליים להוראה וללמידה</h1>
+      <h1 class="title">כלים דיגיטליים<br>להוראה וללמידה</h1>
     </div>
     <div class="scrollcue" aria-hidden="true"><span></span>גלילה</div>
   </section>
