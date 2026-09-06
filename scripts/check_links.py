@@ -22,10 +22,10 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SKIP_SCHEMES = ("http://", "https://", "mailto:", "tel:", "data:", "javascript:", "//")
 # Template placeholders like YOUR_GAMMA_EMBED_URL -- not real links.
 PLACEHOLDER_RE = re.compile(r"^[A-Z0-9_]+$")
-# Absolute paths served by the ALB (not by Pages/S3) -- allowed even though
-# they would break on the GitHub Pages fallback. These are gated by their
-# own listener rules on the production domain.
-ALB_ABSOLUTE_PATHS = ("/stemgrade",)
+# Absolute paths served on the production domain by dedicated routing (ALB
+# listener rules / central Ingress), not by Pages/S3 -- allowed even though
+# they would break on the GitHub Pages fallback.
+ALB_ABSOLUTE_PATHS = ("/stemgrade", "/books")
 
 
 class RefCollector(HTMLParser):
