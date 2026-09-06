@@ -1,9 +1,14 @@
 name: Deploy to server
 
-# Blue-green deploy. The image is built HERE (the server has no internet
-# egress) and shipped via private S3; the server loads it through the S3
-# VPC endpoint, health-checks, then the ALB listener is swapped.
-# The previous color keeps running as instant rollback.
+# Blue-green deploy. The image is built HERE by design (the server has had
+# internet egress since 12.8, but building in CI keeps it load-free and
+# independent of university egress) and shipped via private S3; the server
+# loads it through the S3 VPC endpoint, health-checks, then the ALB listener
+# is swapped. The previous color keeps running as instant rollback.
+#
+# Any failure (checks or deploy) triggers notify-failure, which emails the
+# team via SNS teaching-center-alerts - a red main is never silent (lesson
+# of 4-6.9.2026: a check_links failure blocked ALL deploys for two days).
 
 on:
   push:
@@ -119,3 +124,25 @@ jobs:
             --query 'Listeners[0].DefaultActions[0].ForwardConfig.TargetGroups[].[TargetGroupArn,Weight]' --output text
           echo "Deployed ${GITHUB_SHA::7} -> ${{ steps.pick.outputs.name }}"
           echo "Instant rollback: swap listener back to ${{ steps.pick.outputs.rollback }}"
+
+  notify-failure:
+    name: Email team on failure
+    needs: [checks, deploy]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assume deploy role (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::263011180932:role/teaching-center-github-deploy
+          aws-region: il-central-1
+
+      - name: Publish SNS alert
+        run: |
+          aws sns publish \
+            --topic-arn "arn:aws:sns:il-central-1:263011180932:teaching-center-alerts" \
+            --subject "DEPLOY FAILED: site (${GITHUB_SHA::7})" \
+            --message "Deploy workflow failed on ${GITHUB_REPOSITORY}@${GITHUB_REF_NAME} (${GITHUB_SHA::7}).
+          Pushes to main are NOT reaching production until this is fixed.
+          Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+          Triggered by: ${GITHUB_ACTOR}"
