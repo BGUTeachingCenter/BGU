@@ -126,13 +126,38 @@
     .backhome:hover { text-decoration: underline; }
 
     /* ===================== רשת הספרים ===================== */
-    .books {
+    .library {
       max-width: 940px;
-      margin: 34px auto 0;
+      margin: 22px auto 0;
       padding: 0 24px;
+    }
+
+    .faculty { margin-top: 40px; }
+    .faculty:first-child { margin-top: 8px; }
+
+    .faculty__title {
+      position: relative;
+      font-size: clamp(19px, 2.6vw, 24px);
+      font-weight: 800;
+      color: var(--bgu-text);
+      margin: 0 0 18px;
+      padding-right: 18px;
+    }
+    .faculty__title::before { /* פס אלכסוני - מוטיב הפרספקטיבה */
+      content: "";
+      position: absolute;
+      top: 50%; right: 0;
+      transform: translateY(-50%);
+      width: 10px; height: 26px;
+      background: var(--bgu-gradient-1);
+      clip-path: polygon(30% 0, 100% 0, 70% 100%, 0 100%);
+    }
+
+    .books {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 420px));
       gap: 24px;
+      justify-content: start;
       align-items: stretch;
     }
 
@@ -268,13 +293,13 @@
     }
 
     @media (prefers-reduced-motion: no-preference) {
-      .hero__logo, .hero__eyebrow, .hero__title, .hero__sub, .books {
+      .hero__logo, .hero__eyebrow, .hero__title, .hero__sub, .library {
         animation: fadeUp 0.7s ease both;
       }
       .hero__eyebrow { animation-delay: 0.05s; }
       .hero__title   { animation-delay: 0.10s; }
       .hero__sub     { animation-delay: 0.18s; }
-      .books         { animation-delay: 0.26s; }
+      .library       { animation-delay: 0.26s; }
     }
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(14px); }
@@ -309,26 +334,67 @@
   </header>
 
   <!-- ===================== רשת הספרים ===================== -->
-  <main class="books">
+  <main class="library">
 
-    <article class="book">
-      <div class="book__icon">📐</div>
-      <h2 class="book__title">אלגברה לינארית</h2>
-      <p class="book__author">ד"ר יונתן שלח · ד"ר נדב מאיר</p>
-      <div class="book__spacer"></div>
-      <a class="book__cta" href="/books/algebra/" target="_blank" rel="noopener">
-        פתיחת הספר ←
-      </a>
-    </article>
+    <section class="faculty">
+      <h2 class="faculty__title">הפקולטה למדעי הטבע</h2>
+      <div class="books">
 
-    <article class="book">
-      <div class="book__icon">📈</div>
-      <h2 class="book__title">חשבון דיפרנציאלי ואינטגרלי 1 להנדסה</h2>
-      <p class="book__author">יובל חצ׳טריאן-רזיאל</p>
-      <span class="book__badge">בקרוב</span>
-      <div class="book__spacer"></div>
-      <span class="book__cta book__cta--soon">בקרוב</span>
-    </article>
+        <article class="book">
+          <div class="book__icon">📐</div>
+          <h3 class="book__title">אלגברה לינארית</h3>
+          <p class="book__author">ד"ר יונתן שלח · ד"ר נדב מאיר</p>
+          <div class="book__spacer"></div>
+          <a class="book__cta" href="/books/algebra/" target="_blank" rel="noopener">
+            פתיחת הספר ←
+          </a>
+        </article>
+
+        <article class="book">
+          <div class="book__icon">📈</div>
+          <h3 class="book__title">חשבון דיפרנציאלי ואינטגרלי 1 להנדסה</h3>
+          <p class="book__author">יובל חצ׳טריאן-רזיאל</p>
+          <span class="book__badge">בקרוב</span>
+          <div class="book__spacer"></div>
+          <span class="book__cta book__cta--soon">בקרוב</span>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="faculty">
+      <h2 class="faculty__title">הפקולטה למדעי הרוח והחברה</h2>
+      <div class="books">
+
+        <article class="book">
+          <div class="book__icon">📖</div>
+          <h3 class="book__title">הציונות הדתית: חברה, אידיאולוגיה ותנועה פוליטית</h3>
+          <p class="book__author">ד״ר מורדי מילר · התכנית ללימודי מדינת ישראל</p>
+          <div class="book__spacer"></div>
+          <a class="book__cta" href="/books/mordy/" target="_blank" rel="noopener">
+            פתיחת הספר ←
+          </a>
+        </article>
+
+      </div>
+    </section>
+
+    <section class="faculty">
+      <h2 class="faculty__title">רב-תחומי</h2>
+      <div class="books">
+
+        <article class="book">
+          <div class="book__icon">✍️</div>
+          <h3 class="book__title" lang="en" dir="ltr">Scientific Writing for PhD Students in Engineering</h3>
+          <p class="book__author" lang="en" dir="ltr">Olga Kuminova</p>
+          <div class="book__spacer"></div>
+          <a class="book__cta" href="/books/scientific-writing/" target="_blank" rel="noopener">
+            פתיחת הספר ←
+          </a>
+        </article>
+
+      </div>
+    </section>
 
   </main>
 
