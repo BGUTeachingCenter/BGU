@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Site sanity checks for the BGU teaching-center site.
 
-Checks every *.html file in the repo:
+Checks every *.html file in the repo (excluding .git and .claude --
+the latter holds Claude Code skills/tooling, not site content):
   1. The file parses as HTML (catches truncated/corrupted files).
   2. Every internal link/asset (href/src pointing to a local path)
      resolves to an existing file in the repo.
@@ -78,7 +79,11 @@ def check_file(html_path: Path):
 
 
 def main():
-    html_files = sorted(p for p in REPO_ROOT.rglob("*.html") if ".git" not in p.parts)
+    html_files = sorted(
+        p
+        for p in REPO_ROOT.rglob("*.html")
+        if ".git" not in p.parts and ".claude" not in p.parts
+    )
     total_problems = 0
     for path in html_files:
         problems = check_file(path)
